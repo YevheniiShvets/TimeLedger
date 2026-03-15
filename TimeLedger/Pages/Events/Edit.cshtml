@@ -1,0 +1,58 @@
+﻿@page "{id:int}"
+@model TimeLedger.Pages.Events.EditModel
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<h1>Edit Event</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="EventId" />
+
+    <div>
+        <label asp-for="Input.Title">Title *</label>
+        <input asp-for="Input.Title" />
+        <span asp-validation-for="Input.Title"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.Description">Description</label>
+        <textarea asp-for="Input.Description"></textarea>
+    </div>
+
+    <div>
+        <label asp-for="Input.Location">Location</label>
+        <input asp-for="Input.Location" />
+    </div>
+
+    <div>
+        <label asp-for="Input.StartTime">Start Time *</label>
+        <input type="datetime-local" asp-for="Input.StartTime"value="@(Model.Input.StartTime == default ? 
+            "" : Model.Input.StartTime.ToString("yyyy-MM-ddTHH:mm"))" />
+        <span asp-validation-for="Input.StartTime"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.EndTime">End Time *</label>
+        <input type="datetime-local"asp-for="Input.EndTime"value="@(Model.Input.EndTime == default ? 
+            "" : Model.Input.EndTime.ToString("yyyy-MM-ddTHH:mm"))" />
+        <span asp-validation-for="Input.EndTime"></span>
+    </div>
+
+    @if (Model.ShowOverlapWarning)
+    {
+        <div>
+            <p>⚠ This event overlaps an existing event.</p>
+            <label>
+                <input asp-for="Input.AllowOverlap" type="checkbox" />
+                Proceed anyway
+            </label>
+        </div>
+    }
+
+    <span asp-validation-summary="All"></span>
+
+    <button type="submit">Save Changes</button>
+    <a href="/Events/Delete/@Model.EventId">Delete</a>
+    <a href="/Events">Cancel</a>
+</form>

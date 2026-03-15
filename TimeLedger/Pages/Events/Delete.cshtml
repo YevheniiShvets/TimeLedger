@@ -1,0 +1,23 @@
+﻿@page "{id:int}"
+@model TimeLedger.Pages.Events.DeleteModel
+@{
+    ViewData["Title"] = "Delete Event";
+}
+
+<h1>Delete Event</h1>
+
+<p>Are you sure you want to delete this event?</p>
+
+<div>
+    <p><strong>@Model.Event.Title</strong></p>
+    <p>@Model.Event.StartTime.ToString("dd/MM/yyyy HH:mm") - @Model.Event.EndTime.ToString("HH:mm")</p>
+    @if (Model.Event.Location != null)
+    {
+        <p>@Model.Event.Location</p>
+    }
+</div>
+
+<form method="post">
+    <button type="submit">Delete</button>
+    <a href="/Events">Cancel</a>
+</form>

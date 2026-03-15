@@ -1,7 +1,14 @@
+using TimeLedger.Repositories;
+using TimeLedger.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>(); // <------ CHANGE to a AddScoped when using a real database
+
+builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 
@@ -15,9 +22,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+
 
 app.MapStaticAssets();
 app.MapRazorPages()

@@ -95,3 +95,4 @@ D:\DevApps\TimeLedger\TimeLedger\obj\Debug\net10.0\refint\TimeLedger.dll
 D:\DevApps\TimeLedger\TimeLedger\obj\Debug\net10.0\TimeLedger.pdb
 D:\DevApps\TimeLedger\TimeLedger\obj\Debug\net10.0\TimeLedger.genruntimeconfig.cache
 D:\DevApps\TimeLedger\TimeLedger\obj\Debug\net10.0\ref\TimeLedger.dll
+D:\DevApps\TimeLedger\TimeLedger\obj\Debug\net10.0\TimeLedger.sourcelink.json

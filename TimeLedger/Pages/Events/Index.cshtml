@@ -1,0 +1,30 @@
+﻿@page
+@model TimeLedger.Pages.Events.IndexModel
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<h1>My Events</h1>
+<a href="/Events/Create">+ New Event</a>
+
+@if (!Model.Events.Any())
+{
+    <p>No events yet. Create your first one.</p>
+}
+else
+{
+    foreach (var e in Model.Events)
+    {
+        <div>
+            <strong>@e.Title</strong>
+            <span>@e.StartTime.ToString("dd/MM/yyyy")</span>
+            <span>@e.StartTime.ToString("HH:mm") - @e.EndTime.ToString("HH:mm")</span>
+            <span>@e.Duration</span>
+            @if (e.Location != null)
+            {
+                <span>@e.Location</span>
+            }
+            <a href="/Events/Edit/@e.Id">Edit</a>
+        </div>
+    }
+}

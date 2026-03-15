@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TimeLedger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2dd09789e5354a92849ca77d6bd180a150ade162")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad220992864d4b85c9136bc1aea8f1c3aef5f446")]
 [assembly: System.Reflection.AssemblyProductAttribute("TimeLedger")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TimeLedger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
