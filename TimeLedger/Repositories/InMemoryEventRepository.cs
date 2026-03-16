@@ -8,8 +8,7 @@ public class InMemoryEventRepository : IEventRepository
     private int _nextId = 1;
 
     public Task<IEnumerable<Event>> GetAllAsync()
-        => Task.FromResult<IEnumerable<Event>>(
-            _events.OrderBy(e => e.StartTime));
+        => Task.FromResult<IEnumerable<Event>>(_events.OrderBy(e => e.StartTime));
 
     public Task<Event?> GetByIdAsync(int id)
         => Task.FromResult(_events.FirstOrDefault(e => e.Id == id));

@@ -8,25 +8,33 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/TimeLedger.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/layout.css" />
+    <link rel="stylesheet" href="~/css/events.css" />
+    <link rel="stylesheet" href="~/css/forms.css" />
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <a href="/Events">TimeLedger</a>
-        <a href="/Events/Create">+ Add Event</a>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-icon">📅</span>
+            <div>
+                <h2>TimeLedger</h2>
+                <p>Manage your schedule</p>
+            </div>
+        </div>
+
+        <a href="/Events/Create" class="btn-add">+ Add Event</a>
+
+        <nav class="sidebar-nav">
+            <p class="nav-label">Views</p>
+            <a href="/Events" class="nav-link">Day View</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         @RenderBody()
     </main>
 </div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - TimeLedger - <a asp-area="" asp-page="/Privacy">Privacy</a>
-    </div>
-</footer>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

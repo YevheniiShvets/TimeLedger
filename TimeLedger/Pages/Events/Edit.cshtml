@@ -4,55 +4,62 @@
     ViewData["Title"] = "Edit Event";
 }
 
-<h1>Edit Event</h1>
+<div class="form-container">
+    <a href="/Events" class="form-back">← Back to Calendar</a>
+    <h1 class="form-title">Edit Activity</h1>
+    <p class="form-subtitle">Update details for this activity</p>
 
-<form method="post">
-    <input type="hidden" asp-for="EventId" />
+    <form method="post">
+        <input type="hidden" asp-for="EventId" />
 
-    <div>
-        <label asp-for="Input.Title">Title *</label>
-        <input asp-for="Input.Title" />
-        <span asp-validation-for="Input.Title"></span>
-    </div>
-
-    <div>
-        <label asp-for="Input.Description">Description</label>
-        <textarea asp-for="Input.Description"></textarea>
-    </div>
-
-    <div>
-        <label asp-for="Input.Location">Location</label>
-        <input asp-for="Input.Location" />
-    </div>
-
-    <div>
-        <label asp-for="Input.StartTime">Start Time *</label>
-        <input type="datetime-local" asp-for="Input.StartTime"value="@(Model.Input.StartTime == default ? 
-            "" : Model.Input.StartTime.ToString("yyyy-MM-ddTHH:mm"))" />
-        <span asp-validation-for="Input.StartTime"></span>
-    </div>
-
-    <div>
-        <label asp-for="Input.EndTime">End Time *</label>
-        <input type="datetime-local"asp-for="Input.EndTime"value="@(Model.Input.EndTime == default ? 
-            "" : Model.Input.EndTime.ToString("yyyy-MM-ddTHH:mm"))" />
-        <span asp-validation-for="Input.EndTime"></span>
-    </div>
-
-    @if (Model.ShowOverlapWarning)
-    {
-        <div>
-            <p>⚠ This event overlaps an existing event.</p>
-            <label>
-                <input asp-for="Input.AllowOverlap" type="checkbox" />
-                Proceed anyway
-            </label>
+        <div class="form-group">
+            <label asp-for="Input.Title">Title <span class="required">*</span></label>
+            <input asp-for="Input.Title" placeholder="e.g., Team Meeting, Study Session" />
+            <span asp-validation-for="Input.Title" class="field-error"></span>
         </div>
-    }
 
-    <span asp-validation-summary="All"></span>
+        <div class="form-group">
+            <label asp-for="Input.Description">Description</label>
+            <textarea asp-for="Input.Description" placeholder="Add details about this activity..."></textarea>
+        </div>
 
-    <button type="submit">Save Changes</button>
-    <a href="/Events/Delete/@Model.EventId">Delete</a>
-    <a href="/Events">Cancel</a>
-</form>
+        <div class="form-group">
+            <label asp-for="Input.Location">Location</label>
+            <input asp-for="Input.Location" placeholder="e.g., Room 201, Online" />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Input.StartTime">Start Time <span class="required">*</span></label>
+                <input type="datetime-local" asp-for="Input.StartTime"
+                       value="@(Model.Input.StartTime == default ? "" : Model.Input.StartTime.ToString("yyyy-MM-ddTHH:mm"))" />
+                <span asp-validation-for="Input.StartTime" class="field-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.EndTime">End Time <span class="required">*</span></label>
+                <input type="datetime-local" asp-for="Input.EndTime"
+                       value="@(Model.Input.EndTime == default ? "" : Model.Input.EndTime.ToString("yyyy-MM-ddTHH:mm"))" />
+                <span asp-validation-for="Input.EndTime" class="field-error"></span>
+            </div>
+        </div>
+
+        @if (Model.ShowOverlapWarning)
+        {
+            <div class="overlap-warning">
+                <span>⚠ This event overlaps with an existing event.</span>
+                <label>
+                    <input asp-for="Input.AllowOverlap" type="checkbox" />
+                    Proceed anyway
+                </label>
+            </div>
+        }
+
+        <span asp-validation-summary="All" class="validation-summary"></span>
+
+        <div class="btn-row">
+            <button type="submit" class="btn-primary">Save Changes</button>
+            <a href="/Events/Delete/@Model.EventId" class="btn-danger">Delete</a>
+            <a href="/Events" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

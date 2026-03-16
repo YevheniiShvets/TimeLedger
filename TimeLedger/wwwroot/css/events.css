@@ -1,0 +1,125 @@
+﻿.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.page-subtitle {
+    color: #888;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.date-group {
+    margin-bottom: 24px;
+}
+
+.date-heading {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.today-badge {
+    background: #1a1a2e;
+    color: white;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+.event-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-left: 3px solid #4A90D9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+}
+
+.event-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.event-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.event-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.event-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #666;
+    font-size: 12px;
+}
+
+.event-location {
+    color: #888;
+}
+
+.event-duration {
+    background: #f0f0f0;
+    color: #555;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.event-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.event-card-actions a {
+    color: #888;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.event-card-actions a:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #aaa;
+}
+
+.empty-state p {
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+.event-description {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
