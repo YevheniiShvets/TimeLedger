@@ -4,10 +4,10 @@ namespace TimeLedger.Repositories;
 
 public interface IEventRepository
 {
-    Task<IEnumerable<Event>> GetAllAsync();
-    Task<Event?> GetByIdAsync(int id);
-    Task<Event> AddAsync(Event e);
-    Task<Event> UpdateAsync(Event e);
-    Task DeleteAsync(Event e);
-    Task<bool> HasOverlapAsync(DateTime startTime, DateTime endTime, int? excludeId);
+    IEnumerable<Event> GetAll();
+    Event? GetById(int id);
+    Event Add(Event e);
+    Event Update(Event e);
+    void Delete(Event e);
+    bool HasOverlap(DateTime startTime, DateTime endTime, int? excludeId);
 }

@@ -8,7 +8,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>(); // <------ CHANGE to a AddScoped when using a real database
 
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<EventService>();
 
 var app = builder.Build();
 

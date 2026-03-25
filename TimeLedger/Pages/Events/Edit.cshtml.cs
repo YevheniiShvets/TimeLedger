@@ -7,9 +7,9 @@ namespace TimeLedger.Pages.Events;
 
 public class EditModel : PageModel
 {
-    private readonly IEventService _svc;
+    private readonly EventService _svc;
 
-    public EditModel(IEventService svc)
+    public EditModel(EventService svc)
     {
         _svc = svc;
     }
@@ -22,9 +22,9 @@ public class EditModel : PageModel
 
     public bool ShowOverlapWarning { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(int id)
+    public  IActionResult OnGet(int id)
     {
-        var ev = await _svc.GetByIdAsync(id);
+        var ev =  _svc.GetById(id);
         if (ev is null)
             return NotFound();
 
@@ -41,14 +41,14 @@ public class EditModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public  IActionResult OnPost()
     {
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) = await _svc.UpdateAsync(EventId, Input);
+            var (_, hasOverlap) =  _svc.Update(EventId, Input);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

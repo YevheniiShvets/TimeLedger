@@ -4,7 +4,7 @@ using TimeLedger.Repositories;
 
 namespace TimeLedger.Services;
 
-public class EventService : IEventService
+public class EventService
 {
     private readonly IEventRepository _repo;
 
@@ -13,39 +13,39 @@ public class EventService : IEventService
         _repo = repo;
     }
 
-    public async Task<IEnumerable<EventResponseDto>> GetAllAsync()
-        => (await _repo.GetAllAsync()).Select(Map);
+    public IEnumerable<EventResponseDto> GetAll()
+        => _repo.GetAll().Select(Map);
 
-    public async Task<EventResponseDto?> GetByIdAsync(int id)
+    public  EventResponseDto? GetById(int id)
     {
-        var e = await _repo.GetByIdAsync(id);
+        var e = _repo.GetById(id); // Wait for entity from repo
         return e is null ? null : Map(e);
     }
 
-    public async Task<(EventResponseDto dto, bool hasOverlap)> CreateAsync(CreateEventDto dto)
+    public  (EventResponseDto dto, bool hasOverlap) Create(CreateEventDto dto)
     {
         ValidateTimeRange(dto.StartTime, dto.EndTime);
 
         if (!dto.AllowOverlap)
         {
-            if (await _repo.HasOverlapAsync(dto.StartTime, dto.EndTime, null))
+            if ( _repo.HasOverlap(dto.StartTime, dto.EndTime, null))
                 return (Map(ToEntity(dto)), true);
         }
 
-        var saved = await _repo.AddAsync(ToEntity(dto));
+        var saved = _repo.Add(ToEntity(dto)); // Save first to get ID for response
         return (Map(saved), false);
     }
 
-    public async Task<(EventResponseDto dto, bool hasOverlap)> UpdateAsync(int id, UpdateEventDto dto)
+    public  (EventResponseDto dto, bool hasOverlap) Update(int id, UpdateEventDto dto)
     {
-        var entity = await _repo.GetByIdAsync(id)
+        var entity =  _repo.GetById(id) // Wait for existing entity to update
             ?? throw new KeyNotFoundException();
 
         ValidateTimeRange(dto.StartTime, dto.EndTime);
 
         if (!dto.AllowOverlap)
         {
-            if (await _repo.HasOverlapAsync(dto.StartTime, dto.EndTime, id))
+            if ( _repo.HasOverlap(dto.StartTime, dto.EndTime, id))
                 return (Map(entity), true); // Return existing data if overlap detected
         }
 
@@ -56,18 +56,18 @@ public class EventService : IEventService
         entity.EndTime      = dto.EndTime;
         entity.AllowOverlap = dto.AllowOverlap;
 
-        return (Map(await _repo.UpdateAsync(entity)), false);
+        return (Map(_repo.Update(entity)), false); // Wait for update to complete and return updated data
     }
 
-    public async Task DeleteAsync(int id)
+    public void Delete(int id)
     {
-        var e = await _repo.GetByIdAsync(id)
+        var e = _repo.GetById(id)
             ?? throw new KeyNotFoundException();
-        await _repo.DeleteAsync(e);
+        _repo.Delete(e);
     }
 
     // Private helpers
-    private static void ValidateTimeRange(DateTime start, DateTime end)
+    private void ValidateTimeRange(DateTime start, DateTime end)
     {
         if (start >= end)
             throw new ArgumentException("Start time must be before end time.");

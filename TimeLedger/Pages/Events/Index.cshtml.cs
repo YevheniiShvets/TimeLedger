@@ -6,17 +6,17 @@ namespace TimeLedger.Pages.Events;
 
 public class IndexModel : PageModel
 {
-    private readonly IEventService _svc;
+    private readonly EventService _svc;
 
-    public IndexModel(IEventService svc)
+    public IndexModel(EventService svc)
     {
         _svc = svc;
     }
 
     public IEnumerable<EventResponseDto> Events { get; set; } = [];
 
-    public async Task OnGetAsync()
+    public void OnGet()
     {
-        Events = await _svc.GetAllAsync();
+        Events = _svc.GetAll();
     }
 }

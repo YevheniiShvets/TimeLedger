@@ -7,9 +7,9 @@ namespace TimeLedger.Pages.Events;
 
 public class CreateModel : PageModel
 {
-    private readonly IEventService _svc;
+    private readonly EventService _svc;
 
-    public CreateModel(IEventService svc)
+    public CreateModel(EventService svc)
     {
         _svc = svc;
     }
@@ -21,14 +21,14 @@ public class CreateModel : PageModel
 
     public void OnGet() { }
 
-    public async Task<IActionResult> OnPostAsync()
+    public  IActionResult OnPost()
     {
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) = await _svc.CreateAsync(Input);
+            var (_, hasOverlap) =  _svc.Create(Input);
             if (!hasOverlap) return RedirectToPage("Index");
             ShowOverlapWarning = true;
             return Page();

@@ -7,29 +7,29 @@ namespace TimeLedger.Pages.Events;
 
 public class DeleteModel : PageModel
 {
-    private readonly IEventService _svc;
+    private readonly EventService _svc;
 
-    public DeleteModel(IEventService svc)
+    public DeleteModel(EventService svc)
     {
         _svc = svc;
     }
 
     public EventResponseDto Event { get; set; } = null!;
 
-    public async Task<IActionResult> OnGetAsync(int id)
+    public  IActionResult OnGet(int id)
     {
-        var ev = await _svc.GetByIdAsync(id);
+        var ev =  _svc.GetById(id);
         if (ev is null)
             return NotFound();
         Event = ev;
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(int id)
+    public  IActionResult OnPost(int id)
     {
         try
         {
-            await _svc.DeleteAsync(id);
+             _svc.Delete(id);
         }
         catch (KeyNotFoundException)
         {
