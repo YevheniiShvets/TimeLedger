@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using TimeLedger.Services
+@{
+    var accountName = Context.Session.GetString(AuthSession.UserNameKey);
+    var accountEmail = Context.Session.GetString(AuthSession.UserEmailKey);
+    var isSignedIn = !string.IsNullOrWhiteSpace(accountEmail);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -29,6 +36,25 @@
             <p class="nav-label">Views</p>
             <a href="/Events" class="nav-link">Day View</a>
         </nav>
+
+        <div class="sidebar-footer">
+            @if (isSignedIn)
+            {
+                <div class="account-box">
+                    <p class="account-name">@accountName</p>
+                    <p class="account-email">@accountEmail</p>
+                </div>
+                <form method="post" asp-page="/Account/Logout">
+                    <button type="submit" class="nav-link nav-link-button">Log Out</button>
+                </form>
+            }
+            else
+            {
+                <p class="nav-label">Account</p>
+                <a href="/Account/Login" class="nav-link">Log In</a>
+                <a href="/Account/Register" class="nav-link">Register</a>
+            }
+        </div>
     </aside>
 
     <main class="main-content">

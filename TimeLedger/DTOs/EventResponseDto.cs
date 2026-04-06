@@ -2,13 +2,13 @@
 
 public class EventResponseDto
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public string? Location { get; set; }
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
-    public bool AllowOverlap { get; set; }
+    public int Id { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public string? Description { get; init; }
+    public string? Location { get; init; }
+    public DateTime StartTime { get; init; }
+    public DateTime EndTime { get; init; }
+    public bool AllowOverlap { get; init; }
     
     public string Duration 
     {

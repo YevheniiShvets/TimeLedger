@@ -56,3 +56,5 @@ nunit-*.xml
 .idea
 bin/
 obj/
+
+appsettings.json

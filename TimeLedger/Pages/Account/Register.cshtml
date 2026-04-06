@@ -1,0 +1,50 @@
+﻿@page
+@model TimeLedger.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="form-container auth-form-container">
+    <a href="/Events" class="form-back">← Back to Calendar</a>
+    <h1 class="form-title">Create account</h1>
+    <p class="form-subtitle">Set up your TimeLedger account in a few seconds</p>
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Input.Name">Name <span class="required">*</span></label>
+            <input asp-for="Input.Name" autocomplete="name" placeholder="Your full name" />
+            <span asp-validation-for="Input.Name" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Input.Email">Email <span class="required">*</span></label>
+            <input asp-for="Input.Email" type="email" autocomplete="email" placeholder="you@example.com" />
+            <span asp-validation-for="Input.Email" class="field-error"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Input.Password">Password <span class="required">*</span></label>
+                <input asp-for="Input.Password" type="password" autocomplete="new-password" placeholder="Choose password" />
+                <span asp-validation-for="Input.Password" class="field-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.ConfirmPassword">Confirm Password <span class="required">*</span></label>
+                <input asp-for="Input.ConfirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" />
+                <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="btn-row">
+            <button type="submit" class="btn-primary">Create Account</button>
+            <a href="/Account/Login" class="btn-secondary">Log In</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

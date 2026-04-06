@@ -65,6 +65,40 @@ body {
     background: #2d2d4e;
 }
 
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid #f0f2f5;
+    padding-top: 12px;
+}
+
+.account-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.account-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.account-email {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
 .nav-label {
     font-size: 11px;
     color: #aaa;
@@ -85,6 +119,14 @@ body {
 .nav-link:hover, .nav-link.active {
     background: #f0f0f0;
     color: #1a1a2e;
+}
+
+.nav-link-button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
 }
 
 .main-content {
