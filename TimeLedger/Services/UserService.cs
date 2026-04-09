@@ -1,4 +1,5 @@
-﻿using TimeLedger.DTOs;
+﻿using System;
+using TimeLedger.DTOs;
 using TimeLedger.Models;
 using TimeLedger.Repositories;
 
@@ -8,14 +9,8 @@ public class UserService(IUserRepository userRepository)
 {
     public AccountInfoDto Register(RegisterDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException("Name is required");
-
-        if (string.IsNullOrWhiteSpace(dto.Email))
-            throw new ArgumentException("Email is required");
-
-        if (string.IsNullOrWhiteSpace(dto.Password))
-            throw new ArgumentException("Password is required");
+        ValidateRequired(dto.Name, dto.Email, dto.Password, dto.ConfirmPassword);
+        ValidateLength(dto.Name, dto.Email);
 
         if (userRepository.Exists(dto.Email))
             throw new InvalidOperationException("Email already in use");
@@ -39,10 +34,7 @@ public class UserService(IUserRepository userRepository)
     public AccountInfoDto GetById(int id)
     {
         var user = userRepository.GetById(id);
-        if (user == null)
-            throw new InvalidOperationException("User not found");
-
-        return Map(user);
+        return user == null ? throw new InvalidOperationException("User not found") : Map(user);
     }
 
     public AccountInfoDto Update(int id, UpdateAccountDto dto)
@@ -50,10 +42,12 @@ public class UserService(IUserRepository userRepository)
         var user = userRepository.GetById(id);
         if (user == null)
             throw new InvalidOperationException("User not found");
-
-        if (!string.IsNullOrWhiteSpace(dto.Name))
-            user.Name = dto.Name.Trim();
-
+        
+        ValidateRequired(dto.Name, dto.Email, dto.Password, dto.ConfirmPassword);
+        ValidateLength(dto.Name, dto.Email);
+        
+        user.Name = dto.Name.Trim();
+        
         if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != user.Email)
         {
             if (userRepository.Exists(dto.Email))
@@ -80,6 +74,28 @@ public class UserService(IUserRepository userRepository)
             throw new InvalidOperationException("User not found");
 
         userRepository.Delete(user);
+    }
+    
+    
+    // Private helpers
+    
+    private static void ValidateRequired(string name, string email, string password, string confirmPassword)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.");
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email is required.");
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password is required.");
+        if  (string.IsNullOrWhiteSpace(confirmPassword))
+            throw new ArgumentException("Confirm Password is required.");
+    }
+    private static void ValidateLength(string name, string email)
+    {
+        if (name.Trim().Length > 100)
+            throw new ArgumentException("Name cannot exceed 100 characters.");
+        if (email.Length > 254)
+            throw new ArgumentException("Email cannot exceed 254 characters.");
     }
 
     private static AccountInfoDto Map(User u) => new()

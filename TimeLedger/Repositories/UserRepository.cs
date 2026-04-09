@@ -1,29 +1,25 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data;
+using Microsoft.Data.SqlClient;
 using TimeLedger.Models;
 
 namespace TimeLedger.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(IConfiguration configuration) : IUserRepository
 {
-    private readonly string _connectionString;
-    
-    public UserRepository(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
-    
+    private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection is not working");
+
     public User? GetById(int id)
     {
         using var connection = new SqlConnection(_connectionString);
         connection.Open();
         
         const string sql = @"
-        SELECT Id, Email, PasswordHash, CreatedAt
+        SELECT Id, Name, Email, PasswordHash, CreatedAt
         FROM Users
         WHERE Id = @Id";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", id);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         
         using var reader = command.ExecuteReader();
         if (reader.Read())
@@ -31,9 +27,10 @@ public class UserRepository : IUserRepository
             return new User
             {
                 Id = reader.GetInt32(0),
-                Email = reader.GetString(1),
-                PasswordHash = reader.GetString(2),
-                CreatedAt = reader.GetDateTime(3)
+                Name = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4)
             };
         }
         return null;
@@ -45,12 +42,12 @@ public class UserRepository : IUserRepository
         connection.Open();
         
         const string sql = @"
-        SELECT Id, Email, PasswordHash, CreatedAt
+        SELECT Id, Name, Email, PasswordHash, CreatedAt
         FROM Users
         WHERE Email = @Email";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Email", email);
+        command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
         
         using var reader = command.ExecuteReader();
         if (reader.Read())
@@ -58,9 +55,10 @@ public class UserRepository : IUserRepository
             return new User
             {
                 Id = reader.GetInt32(0),
-                Email = reader.GetString(1),
-                PasswordHash = reader.GetString(2),
-                CreatedAt = reader.GetDateTime(3)
+                Name = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4)
             };
         }
         return null;
@@ -72,14 +70,15 @@ public class UserRepository : IUserRepository
         connection.Open();
 
         const string sql = @"
-            INSERT INTO Users (Email, PasswordHash, CreatedAt)
-            VALUES (@Email, @PasswordHash, @CreatedAt);
+            INSERT INTO Users (Name, Email, PasswordHash, CreatedAt)
+            VALUES (@Name, @Email, @PasswordHash, @CreatedAt);
             SELECT SCOPE_IDENTITY();";
 
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Email", user.Email);
-        command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-        command.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
+        command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = user.Name;
+        command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = user.Email;
+        command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 1000).Value = user.PasswordHash;
+        command.Parameters.Add("@CreatedAt", SqlDbType.DateTime2).Value = user.CreatedAt;
 
         var result = command.ExecuteScalar();
         if (result == null)
@@ -96,14 +95,17 @@ public class UserRepository : IUserRepository
 
         const string sql = @"
             UPDATE Users
-            SET Email = @Email,
+            SET Name = @Name,
+            Email = @Email,
             PasswordHash = @PasswordHash
             WHERE Id = @Id";
 
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", user.Id);
-        command.Parameters.AddWithValue("@Email", user.Email);
-        command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+        
+        command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = user.Name;
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = user.Id;
+        command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = user.Email;
+        command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 1000).Value = user.PasswordHash;
 
         var rowsAffected = command.ExecuteNonQuery();
         if (rowsAffected == 0)
@@ -120,8 +122,10 @@ public class UserRepository : IUserRepository
         DELETE FROM Users
         WHERE Id = @Id";
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", user.Id);
-        command.ExecuteNonQuery();
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = user.Id;
+        var rowsAffected = command.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new Exception("Failed to delete user.");
     }
 
     public bool Exists(string email)
@@ -135,7 +139,7 @@ public class UserRepository : IUserRepository
         WHERE Email = @Email";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Email", email);
+        command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
         
         var count = Convert.ToInt32(command.ExecuteScalar());
         return count > 0;

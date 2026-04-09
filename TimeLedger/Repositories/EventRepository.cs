@@ -1,16 +1,12 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data;
+using Microsoft.Data.SqlClient;
 using TimeLedger.Models;
 
 namespace TimeLedger.Repositories;
 
-public class EventRepository : IEventRepository
+public class EventRepository(IConfiguration configuration) : IEventRepository
 {
-    private readonly string _connectionString;
-
-    public EventRepository(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
+    private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Database is not working");
 
     public IEnumerable<Event> GetAll()
     {
@@ -53,7 +49,7 @@ public class EventRepository : IEventRepository
         WHERE Id = @Id";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", id);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         
         using var reader = command.ExecuteReader();
         
@@ -82,12 +78,12 @@ public class EventRepository : IEventRepository
         VALUES (@Title, @Description, @Location, @StartTime, @EndTime, @AllowOverlap)";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Title", e.Title);
-        command.Parameters.AddWithValue("@Description", (object?)e.Description ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Location", (object?)e.Location ?? DBNull.Value);
-        command.Parameters.AddWithValue("@StartTime", e.StartTime);
-        command.Parameters.AddWithValue("@EndTime", e.EndTime);
-        command.Parameters.AddWithValue("@AllowOverlap", e.AllowOverlap);
+        command.Parameters.Add("@Title", SqlDbType.NVarChar, 200).Value = e.Title;
+        command.Parameters.Add("@Description", SqlDbType.NVarChar, 1000).Value = (object?)e.Description ?? DBNull.Value;
+        command.Parameters.Add("@Location", SqlDbType.NVarChar, 300).Value = (object?)e.Location ?? DBNull.Value;
+        command.Parameters.Add("@StartTime", SqlDbType.DateTime2).Value = e.StartTime;
+        command.Parameters.Add("@EndTime", SqlDbType.DateTime2).Value = e.EndTime;
+        command.Parameters.Add("@AllowOverlap", SqlDbType.Bit).Value = e.AllowOverlap;
         
         e.Id = (int)command.ExecuteScalar();
         return e;
@@ -109,13 +105,13 @@ public class EventRepository : IEventRepository
         WHERE Id = @Id";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", e.Id);
-        command.Parameters.AddWithValue("@Title", e.Title);
-        command.Parameters.AddWithValue("@Description", (object?)e.Description ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Location", (object?)e.Location ?? DBNull.Value);
-        command.Parameters.AddWithValue("@StartTime", e.StartTime);
-        command.Parameters.AddWithValue("@EndTime", e.EndTime);
-        command.Parameters.AddWithValue("@AllowOverlap", e.AllowOverlap);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
+        command.Parameters.Add("@Title", SqlDbType.NVarChar, 200).Value = e.Title;
+        command.Parameters.Add("@Description", SqlDbType.NVarChar, 1000).Value = (object?)e.Description ?? DBNull.Value;
+        command.Parameters.Add("@Location", SqlDbType.NVarChar, 300).Value = (object?)e.Location ?? DBNull.Value;
+        command.Parameters.Add("@StartTime", SqlDbType.DateTime2).Value = e.StartTime;
+        command.Parameters.Add("@EndTime", SqlDbType.DateTime2).Value = e.EndTime;
+        command.Parameters.Add("@AllowOverlap", SqlDbType.Bit).Value = e.AllowOverlap;
         
         command.ExecuteNonQuery();
         return e;
@@ -129,7 +125,7 @@ public class EventRepository : IEventRepository
         const string sql = "DELETE FROM Events WHERE Id = @Id";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@Id", e.Id);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
         
         command.ExecuteNonQuery();
     }
@@ -147,9 +143,9 @@ public class EventRepository : IEventRepository
           AND EndTime > @StartTime";
         
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@StartTime", startTime);
-        command.Parameters.AddWithValue("@EndTime", endTime);
-        command.Parameters.AddWithValue("@ExcludedId", (object?)excludedId ?? DBNull.Value);
+        command.Parameters.Add("@StartTime", SqlDbType.DateTime2).Value = startTime;
+        command.Parameters.Add("@EndTime", SqlDbType.DateTime2).Value = endTime;
+        command.Parameters.Add("@ExcludedId", SqlDbType.Int).Value = (object?)excludedId ?? DBNull.Value;
         
         var count = (int)command.ExecuteScalar();
         return count > 0;

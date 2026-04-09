@@ -1,4 +1,7 @@
-﻿using TimeLedger.DTOs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using TimeLedger.DTOs;
 using TimeLedger.Models;
 using TimeLedger.Repositories;
 
@@ -16,6 +19,11 @@ public class EventService(IEventRepository repo)
     }
     public  (EventResponseDto dto, bool hasOverlap) Create(CreateEventDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Title))
+            throw new ArgumentException("Title is required.");
+        
+        ValidateLength(dto.Title, dto.Description, dto.Location); 
+        
         ValidateTimeRange(dto.StartTime, dto.EndTime);
 
         if (!dto.AllowOverlap)
@@ -32,7 +40,11 @@ public class EventService(IEventRepository repo)
     {
         var entity =  repo.GetById(id)
             ?? throw new KeyNotFoundException();
-
+        if (string.IsNullOrWhiteSpace(dto.Title))
+            throw new ArgumentException("Title is required.");
+        
+        ValidateLength(dto.Title, dto.Description, dto.Location);
+        
         ValidateTimeRange(dto.StartTime, dto.EndTime);
 
         if (!dto.AllowOverlap)
@@ -41,7 +53,7 @@ public class EventService(IEventRepository repo)
                 return (Map(entity), true);
         }
 
-        entity.Title        = dto.Title;
+        entity.Title        = dto.Title.Trim();
         entity.Description  = dto.Description;
         entity.Location     = dto.Location;
         entity.StartTime    = dto.StartTime;
@@ -59,12 +71,25 @@ public class EventService(IEventRepository repo)
     }
 
     // Private helpers
-    private void ValidateTimeRange(DateTime start, DateTime end)
+    private static void ValidateTimeRange(DateTime start, DateTime end)
     {
+        
         if (start >= end)
             throw new ArgumentException("Start time must be before end time.");
     }
 
+
+
+    private static void ValidateLength(string title, string? description, string? location)
+    {
+        if (title.Trim().Length > 200)
+            throw new ArgumentException("Title cannot exceed 200 characters.");
+        if (description != null && description.Trim().Length > 1000)
+            throw new ArgumentException("Description cannot exceed 1000 characters.");
+        if (location != null && location.Trim().Length > 300)
+            throw new ArgumentException("Location cannot exceed 300 characters.");
+    }
+    
     private static EventResponseDto Map(Event e) => new() // Entity -> DTO
     {
         Id = e.Id,
@@ -73,16 +98,16 @@ public class EventService(IEventRepository repo)
         Location = e.Location,
         StartTime = e.StartTime,
         EndTime = e.EndTime,
-        AllowOverlap = e.AllowOverlap,
+        AllowOverlap = e.AllowOverlap
     };
 
     private static Event ToEntity(CreateEventDto d) => new() //DTO -> Entity
     {
-        Title = d.Title,
+        Title = d.Title.Trim(),
         Description = d.Description,
         Location = d.Location,
         StartTime = d.StartTime,
         EndTime = d.EndTime,
-        AllowOverlap = d.AllowOverlap,
+        AllowOverlap = d.AllowOverlap
     };
 }

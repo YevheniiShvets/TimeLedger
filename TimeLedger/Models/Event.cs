@@ -1,4 +1,6 @@
-﻿namespace TimeLedger.Models;
+﻿using System;
+
+namespace TimeLedger.Models;
 
 public class Event
 {

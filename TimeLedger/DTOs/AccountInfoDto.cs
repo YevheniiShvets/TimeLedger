@@ -1,4 +1,6 @@
-﻿namespace TimeLedger.DTOs;
+﻿using System;
+
+namespace TimeLedger.DTOs;
 
 public class AccountInfoDto
 {
