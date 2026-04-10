@@ -1,0 +1,331 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 35
+skinparam ranksep 45
+hide empty members
+
+package "Models" {
+  class Event {
+    +Id : int
+    +Title : string
+    +Description : string?
+    +Location : string?
+    +StartTime : DateTime
+    +EndTime : DateTime
+    +AllowOverlap : bool
+  }
+
+  class User {
+    +Id : int
+    +Name : string
+    +Email : string
+    +PasswordHash : string
+    +CreatedAt : DateTime
+  }
+}
+
+package "DTOs" {
+  package "Events" {
+    class CreateEventDto {
+      +Title : string
+      +Description : string?
+      +Location : string?
+      +StartTime : DateTime
+      +EndTime : DateTime
+      +AllowOverlap : bool
+    }
+
+    class UpdateEventDto {
+      +Title : string
+      +Description : string?
+      +Location : string?
+      +StartTime : DateTime
+      +EndTime : DateTime
+      +AllowOverlap : bool
+    }
+
+    class EventResponseDto {
+      +Id : int
+      +Title : string
+      +Description : string?
+      +Location : string?
+      +StartTime : DateTime
+      +EndTime : DateTime
+      +AllowOverlap : bool
+      +Duration : string
+    }
+  }
+
+  package "Account" {
+    class RegisterDto {
+      +Email : string
+      +Name : string
+      +Password : string
+      +ConfirmPassword : string
+    }
+
+    class LoginDto {
+      +Email : string
+      +Password : string
+    }
+
+    class UpdateAccountDto {
+      +Name : string
+      +Email : string
+      +Password : string
+      +ConfirmPassword : string
+    }
+
+    class AccountInfoDto {
+      +Id : int
+      +Email : string
+      +Name : string
+      +Description : string
+      +CreatedAt : DateTime
+    }
+  }
+}
+
+package "Repositories" {
+  package "Events" {
+    interface IEventRepository {
+      +GetAll() : IEnumerable<Event>
+      +GetById(id:int) : Event?
+      +Add(e:Event) : Event
+      +Update(e:Event) : Event
+      +Delete(e:Event) : void
+      +HasOverlap(startTime:DateTime, endTime:DateTime, excludeId:int?) : bool
+    }
+
+    class EventRepository {
+      -_connectionString : string
+      +GetAll() : IEnumerable<Event>
+      +GetById(id:int) : Event?
+      +Add(e:Event) : Event
+      +Update(e:Event) : Event
+      +Delete(e:Event) : void
+      +HasOverlap(startTime:DateTime, endTime:DateTime, excludedId:int?) : bool
+    }
+
+    class InMemoryEventRepository {
+      -_events : List<Event>
+      -_nextId : int
+      +GetAll() : IEnumerable<Event>
+      +GetById(id:int) : Event?
+      +Add(e:Event) : Event
+      +Update(e:Event) : Event
+      +Delete(e:Event) : void
+      +HasOverlap(startTime:DateTime, endTime:DateTime, excludeId:int?) : bool
+    }
+  }
+
+  package "Users" {
+    interface IUserRepository {
+      +GetById(id:int) : User?
+      +GetByEmail(email:string) : User?
+      +Add(user:User) : User
+      +Update(user:User) : User
+      +Delete(user:User) : void
+      +Exists(email:string) : bool
+    }
+
+    class UserRepository {
+      -_connectionString : string
+      +GetById(id:int) : User?
+      +GetByEmail(email:string) : User?
+      +Add(user:User) : User
+      +Update(user:User) : User
+      +Delete(user:User) : void
+      +Exists(email:string) : bool
+    }
+  }
+}
+
+package "Services" {
+  package "Events" {
+    class EventService {
+      +GetAll() : IEnumerable<EventResponseDto>
+      +GetById(id:int) : EventResponseDto?
+      +Create(dto:CreateEventDto) : (EventResponseDto dto, bool hasOverlap)
+      +Update(id:int, dto:UpdateEventDto) : (EventResponseDto dto, bool hasOverlap)
+      +Delete(id:int) : void
+    }
+  }
+
+  package "Accounts" {
+    class UserService {
+      +Register(dto:RegisterDto) : AccountInfoDto
+      +Login(dto:LoginDto) : AccountInfoDto
+      +GetById(id:int) : AccountInfoDto
+      +Update(id:int, dto:UpdateAccountDto) : AccountInfoDto
+      +Delete(id:int) : void
+    }
+  }
+
+  package "Auth" {
+    class AuthSession <<static>> {
+      +UserIdKey : string
+      +UserEmailKey : string
+      +UserNameKey : string
+    }
+  }
+}
+
+package "Pages (Root)" {
+  class RootIndexModel {
+    +OnGet() : void
+  }
+  class PrivacyModel {
+    +OnGet() : void
+  }
+  class ErrorModel {
+    +RequestId : string?
+    +ShowRequestId : bool
+    +OnGet() : void
+  }
+}
+
+package "Pages.Events" {
+  class EventsIndexModel {
+    +Events : IEnumerable<EventResponseDto>
+    +OnGet() : void
+  }
+
+  class CreateModel {
+    +Input : CreateEventDto
+    +ShowOverlapWarning : bool
+    +OnGet() : void
+    +OnPost() : IActionResult
+  }
+
+  class EditModel {
+    +Input : UpdateEventDto
+    +EventId : int
+    +ShowOverlapWarning : bool
+    +OnGet(id:int) : IActionResult
+    +OnPost() : IActionResult
+  }
+
+  class DeleteModel {
+    +Event : EventResponseDto
+    +OnGet(id:int) : IActionResult
+    +OnPost(id:int) : IActionResult
+  }
+}
+
+package "Pages.Account" {
+  class LoginModel {
+    +Input : LoginDto
+    +OnGet() : IActionResult
+    +OnPost() : IActionResult
+  }
+
+  class RegisterModel {
+    +Input : RegisterDto
+    +OnGet() : IActionResult
+    +OnPost() : IActionResult
+  }
+
+  class LogoutModel {
+    +OnGet() : IActionResult
+    +OnPost() : IActionResult
+  }
+
+  class InfoModel {
+    +Account : AccountInfoDto
+    +OnGet() : IActionResult
+  }
+
+  class EditAccountModel {
+    +Input : UpdateAccountDto
+    +OnGet() : IActionResult
+    +OnPost() : IActionResult
+  }
+}
+
+class Program <<composition root>>
+
+' Layout hints to keep related classes and feature flows aligned
+RootIndexModel -[hidden]down- PrivacyModel
+PrivacyModel -[hidden]down- ErrorModel
+
+EventsIndexModel -[hidden]down- CreateModel
+CreateModel -[hidden]down- EditModel
+EditModel -[hidden]down- DeleteModel
+
+LoginModel -[hidden]down- RegisterModel
+RegisterModel -[hidden]down- LogoutModel
+LogoutModel -[hidden]down- InfoModel
+InfoModel -[hidden]down- EditAccountModel
+
+CreateEventDto -[hidden]down- UpdateEventDto
+UpdateEventDto -[hidden]down- EventResponseDto
+
+RegisterDto -[hidden]down- LoginDto
+LoginDto -[hidden]down- UpdateAccountDto
+UpdateAccountDto -[hidden]down- AccountInfoDto
+
+IEventRepository -[hidden]down- EventRepository
+EventRepository -[hidden]down- InMemoryEventRepository
+IUserRepository -[hidden]down- UserRepository
+
+Event -[hidden]down- User
+
+IEventRepository <|.. EventRepository
+IEventRepository <|.. InMemoryEventRepository
+IUserRepository <|.. UserRepository
+
+EventService ..> IEventRepository
+UserService ..> IUserRepository
+
+EventService ..> Event
+EventService ..> CreateEventDto
+EventService ..> UpdateEventDto
+EventService ..> EventResponseDto
+
+UserService ..> User
+UserService ..> RegisterDto
+UserService ..> LoginDto
+UserService ..> UpdateAccountDto
+UserService ..> AccountInfoDto
+
+CreateModel ..> EventService
+CreateModel o-- CreateEventDto
+
+EditModel ..> EventService
+EditModel o-- UpdateEventDto
+
+DeleteModel ..> EventService
+DeleteModel o-- EventResponseDto
+
+EventsIndexModel ..> EventService
+EventsIndexModel o-- EventResponseDto
+
+LoginModel ..> UserService
+LoginModel o-- LoginDto
+LoginModel ..> AuthSession
+
+RegisterModel ..> UserService
+RegisterModel o-- RegisterDto
+RegisterModel ..> AuthSession
+
+InfoModel ..> UserService
+InfoModel o-- AccountInfoDto
+InfoModel ..> AuthSession
+
+EditAccountModel ..> UserService
+EditAccountModel o-- UpdateAccountDto
+EditAccountModel ..> AuthSession
+
+LogoutModel ..> AuthSession
+
+Program ..> IEventRepository
+Program ..> IUserRepository
+Program ..> EventService
+Program ..> UserService
+Program ..> AuthSession
+
+@enduml

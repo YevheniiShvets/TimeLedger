@@ -1,0 +1,38 @@
+﻿@page
+@model TimeLedger.Pages.Account.InfoModel
+@{
+    ViewData["Title"] = "Account Info";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/accounts.css" asp-append-version="true" />
+}
+
+<div class="account-info-container">
+    <a asp-page="/Events/Index" class="form-back">← Back to Calendar</a>
+    <h1 class="form-title">Account Information</h1>
+    <p class="form-subtitle">Your profile details and account status</p>
+
+    <div class="account-info-card">
+        <div class="account-info-row">
+            <span class="account-info-label">Name</span>
+            <span class="account-info-value">@Model.Account.Name</span>
+        </div>
+
+        <div class="account-info-row">
+            <span class="account-info-label">Email</span>
+            <span class="account-info-value">@Model.Account.Email</span>
+        </div>
+
+        <div class="account-info-row">
+            <span class="account-info-label">Member Since</span>
+            <span class="account-info-value">@Model.Account.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</span>
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <a asp-page="/Account/Edit" class="btn-primary">Edit Account</a>
+        <a asp-page="/Events/Index" class="btn-secondary">Back to Events</a>
+    </div>
+</div>
+

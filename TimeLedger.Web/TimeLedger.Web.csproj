@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>TimeLedger</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="obj\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TimeLedger.Core\TimeLedger.Core.csproj" />
+      <ProjectReference Include="..\TimeLedger.Infrastructure\TimeLedger.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

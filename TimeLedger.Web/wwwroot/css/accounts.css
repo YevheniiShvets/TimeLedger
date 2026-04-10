@@ -1,0 +1,43 @@
+﻿.account-info-container {
+    max-width: 640px;
+}
+
+.account-info-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.account-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.account-info-row:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.account-info-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+}
+
+.account-info-value {
+    color: #1a1a2e;
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
