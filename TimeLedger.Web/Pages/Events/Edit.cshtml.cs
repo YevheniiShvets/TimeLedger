@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.Models;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Events;
@@ -28,7 +29,7 @@ public class EditModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        var ev =  _svc.GetById(id, userId.Value);
+        var ev =  _svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
 
@@ -56,7 +57,7 @@ public class EditModel : PageModel
 
         try
         {
-            var (_, hasOverlap) =  _svc.Update(EventId, Input, userId.Value);
+            var (_, hasOverlap) =  _svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

@@ -8,15 +8,15 @@ public class InMemoryEventRepository : IEventRepository
     private readonly List<Event> _events = [];
     private int _nextId = 1;
 
-    public IEnumerable<Event> GetAll(int userId)
+    public IEnumerable<Event> GetAll(EventOwnerType ownerType, int ownerId)
     {
         return _events
-            .Where(e => e.UserId == userId)
+            .Where(e => e.OwnerType == ownerType && e.OwnerId == ownerId)
             .OrderBy(e => e.StartTime);
     }
 
-    public Event? GetById(int id, int userId)
-        => _events.FirstOrDefault(e => e.Id == id && e.UserId == userId);
+    public Event? GetById(int id, EventOwnerType ownerType, int ownerId)
+        => _events.FirstOrDefault(e => e.Id == id && e.OwnerType == ownerType && e.OwnerId == ownerId);
 
 
     public Event Add(Event e)
@@ -28,7 +28,7 @@ public class InMemoryEventRepository : IEventRepository
 
     public Event Update(Event e)
     {
-        var index = _events.FindIndex(x => x.Id == e.Id && x.UserId == e.UserId);
+        var index = _events.FindIndex(x => x.Id == e.Id && x.OwnerType == e.OwnerType && x.OwnerId == e.OwnerId);
         if (index < 0)
             throw new KeyNotFoundException();
         _events[index] = e;
@@ -37,13 +37,14 @@ public class InMemoryEventRepository : IEventRepository
 
     public void Delete(Event e)
     {
-        _events.RemoveAll(x => x.Id == e.Id && x.UserId == e.UserId);
+        _events.RemoveAll(x => x.Id == e.Id && x.OwnerType == e.OwnerType && x.OwnerId == e.OwnerId);
     }
 
-    public bool HasOverlap(DateTime startTime, DateTime endTime, int? excludeId, int userId)
+    public bool HasOverlap(DateTime startTime, DateTime endTime, int? excludeId, EventOwnerType ownerType, int ownerId)
     {
         var result = _events.Any(e =>
-            e.UserId == userId &&
+            e.OwnerType == ownerType &&
+            e.OwnerId == ownerId &&
             (excludeId == null || e.Id != excludeId)
             && e.StartTime < endTime
             && e.EndTime > startTime);

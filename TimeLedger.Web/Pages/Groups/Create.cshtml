@@ -1,0 +1,25 @@
+﻿@page
+@model TimeLedger.Pages.Groups.CreateModel
+@{
+    ViewData["Title"] = "Create Group";
+}
+<div class="form-container auth-form-container">
+    <a asp-page="/Groups/Index" class="form-back">← Back to Groups</a>
+    <h1 class="form-title">Create Group</h1>
+    <p class="form-subtitle">Create a shared space for group-owned events</p>
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Input.Name">Group Name <span class="required">*</span></label>
+            <input asp-for="Input.Name" placeholder="e.g., Project Team" />
+            <span asp-validation-for="Input.Name" class="field-error"></span>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <div class="btn-row">
+            <button type="submit" class="btn-primary">Create Group</button>
+            <a asp-page="/Groups/Index" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

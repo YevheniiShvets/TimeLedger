@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.Models;
 using TimeLedger.Core.Services;
 
 
@@ -23,7 +24,7 @@ public class DeleteModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        var ev =  _svc.GetById(id, userId.Value);
+        var ev =  _svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
         Event = ev;
@@ -38,7 +39,7 @@ public class DeleteModel : PageModel
 
         try
         {
-             _svc.Delete(id, userId.Value);
+             _svc.Delete(id, EventOwnerType.User, userId.Value);
         }
         catch (KeyNotFoundException)
         {
