@@ -10,18 +10,20 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
 {
     private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Database is not working");
 
-    public IEnumerable<Event> GetAll()
+    public IEnumerable<Event> GetAll(int userId)
     {
         var events = new List<Event>();
         using var connection = new SqlConnection(_connectionString);
         connection.Open();
         
         const string sql = @"
-        SELECT Id, Title, Description, Location, StartTime, EndTime, AllowOverlap
+        SELECT Id, UserId, Title, Description, Location, StartTime, EndTime, AllowOverlap
             FROM Events
+            WHERE UserId = @UserId
             ORDER BY StartTime";
         
         using var command = new SqlCommand(sql, connection);
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
         using var reader = command.ExecuteReader();
 
         while (reader.Read())
@@ -29,29 +31,31 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
             events.Add(new Event
             {
                 Id = reader.GetInt32(0),
-                Title = reader.GetString(1),
-                Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-                Location = reader.IsDBNull(3) ? null : reader.GetString(3),
-                StartTime = reader.GetDateTime(4),
-                EndTime = reader.GetDateTime(5),
-                AllowOverlap = reader.GetBoolean(6)
+                UserId = reader.GetInt32(1),
+                Title = reader.GetString(2),
+                Description = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Location = reader.IsDBNull(4) ? null : reader.GetString(4),
+                StartTime = reader.GetDateTime(5),
+                EndTime = reader.GetDateTime(6),
+                AllowOverlap = reader.GetBoolean(7)
             });
         }
         return events;
     }
 
-    public Event? GetById(int id)
+    public Event? GetById(int id, int userId)
     {
         using var connection = new SqlConnection(_connectionString);
         connection.Open();
         
         const string sql = @"
-        SELECT Id, Title, Description, Location, StartTime, EndTime, AllowOverlap
+        SELECT Id, UserId, Title, Description, Location, StartTime, EndTime, AllowOverlap
         FROM Events
-        WHERE Id = @Id";
+        WHERE Id = @Id AND UserId = @UserId";
         
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
         
         using var reader = command.ExecuteReader();
         
@@ -60,12 +64,13 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         return new Event
         {
             Id = reader.GetInt32(0),
-            Title = reader.GetString(1),
-            Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-            Location = reader.IsDBNull(3) ? null : reader.GetString(3),
-            StartTime = reader.GetDateTime(4),
-            EndTime = reader.GetDateTime(5),
-            AllowOverlap = reader.GetBoolean(6)
+            UserId = reader.GetInt32(1),
+            Title = reader.GetString(2),
+            Description = reader.IsDBNull(3) ? null : reader.GetString(3),
+            Location = reader.IsDBNull(4) ? null : reader.GetString(4),
+            StartTime = reader.GetDateTime(5),
+            EndTime = reader.GetDateTime(6),
+            AllowOverlap = reader.GetBoolean(7)
         };
     }
 
@@ -75,11 +80,12 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         connection.Open();
         
         const string sql = @"
-        INSERT INTO Events(Title, Description, Location, StartTime, EndTime, AllowOverlap)
+        INSERT INTO Events(UserId, Title, Description, Location, StartTime, EndTime, AllowOverlap)
         OUTPUT INSERTED.Id
-        VALUES (@Title, @Description, @Location, @StartTime, @EndTime, @AllowOverlap)";
+        VALUES (@UserId, @Title, @Description, @Location, @StartTime, @EndTime, @AllowOverlap)";
         
         using var command = new SqlCommand(sql, connection);
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = e.UserId;
         command.Parameters.Add("@Title", SqlDbType.NVarChar, 200).Value = e.Title;
         command.Parameters.Add("@Description", SqlDbType.NVarChar, 1000).Value = (object?)e.Description ?? DBNull.Value;
         command.Parameters.Add("@Location", SqlDbType.NVarChar, 300).Value = (object?)e.Location ?? DBNull.Value;
@@ -104,10 +110,11 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
             StartTime = @StartTime, 
             EndTime = @EndTime, 
             AllowOverlap = @AllowOverlap
-        WHERE Id = @Id";
+        WHERE Id = @Id AND UserId = @UserId";
         
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = e.UserId;
         command.Parameters.Add("@Title", SqlDbType.NVarChar, 200).Value = e.Title;
         command.Parameters.Add("@Description", SqlDbType.NVarChar, 1000).Value = (object?)e.Description ?? DBNull.Value;
         command.Parameters.Add("@Location", SqlDbType.NVarChar, 300).Value = (object?)e.Location ?? DBNull.Value;
@@ -124,15 +131,16 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         using var connection = new SqlConnection(_connectionString);
         connection.Open();
         
-        const string sql = "DELETE FROM Events WHERE Id = @Id";
+        const string sql = "DELETE FROM Events WHERE Id = @Id AND UserId = @UserId";
         
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = e.UserId;
         
         command.ExecuteNonQuery();
     }
 
-    public bool HasOverlap(DateTime startTime, DateTime endTime, int? excludedId)
+    public bool HasOverlap(DateTime startTime, DateTime endTime, int? excludedId, int userId)
     {
         using var connection = new SqlConnection(_connectionString);
         connection.Open();
@@ -140,11 +148,13 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         const string sql = @"
         SELECT COUNT(*) 
         FROM Events
-        WHERE (@ExcludedId IS NULL OR Id <> @ExcludedId)
+        WHERE UserId = @UserId
+          AND (@ExcludedId IS NULL OR Id <> @ExcludedId)
           AND StartTime < @EndTime
           AND EndTime > @StartTime";
         
         using var command = new SqlCommand(sql, connection);
+        command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
         command.Parameters.Add("@StartTime", SqlDbType.DateTime2).Value = startTime;
         command.Parameters.Add("@EndTime", SqlDbType.DateTime2).Value = endTime;
         command.Parameters.Add("@ExcludedId", SqlDbType.Int).Value = (object?)excludedId ?? DBNull.Value;

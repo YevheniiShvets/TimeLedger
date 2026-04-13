@@ -19,7 +19,11 @@ public class DeleteModel : PageModel
 
     public  IActionResult OnGet(int id)
     {
-        var ev =  _svc.GetById(id);
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
+        var ev =  _svc.GetById(id, userId.Value);
         if (ev is null)
             return NotFound();
         Event = ev;
@@ -28,9 +32,13 @@ public class DeleteModel : PageModel
 
     public  IActionResult OnPost(int id)
     {
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
         try
         {
-             _svc.Delete(id);
+             _svc.Delete(id, userId.Value);
         }
         catch (KeyNotFoundException)
         {

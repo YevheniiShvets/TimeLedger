@@ -20,16 +20,27 @@ public class CreateModel : PageModel
 
     public bool ShowOverlapWarning { get; set; }
 
-    public void OnGet() { }
+    public IActionResult OnGet()
+    {
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
+        return Page();
+    }
 
     public  IActionResult OnPost()
     {
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) =  _svc.Create(Input);
+            var (_, hasOverlap) =  _svc.Create(Input, userId.Value);
             if (!hasOverlap) return RedirectToPage("Index");
             ShowOverlapWarning = true;
             return Page();

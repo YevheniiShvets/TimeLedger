@@ -6,15 +6,16 @@ namespace TimeLedger.Core.Services;
 
 public class EventService(IEventRepository repo)
 {
-    public IEnumerable<EventResponseDto> GetAll()
-        => repo.GetAll().Select(Map);
+    public IEnumerable<EventResponseDto> GetAll(int userId)
+        => repo.GetAll(userId).Select(Map);
 
-    public  EventResponseDto? GetById(int id)
+    public EventResponseDto? GetById(int id, int userId)
     {
-        var e = repo.GetById(id);
+        var e = repo.GetById(id, userId);
         return e is null ? null : Map(e);
     }
-    public  (EventResponseDto dto, bool hasOverlap) Create(CreateEventDto dto)
+
+    public (EventResponseDto dto, bool hasOverlap) Create(CreateEventDto dto, int userId)
     {
         if (string.IsNullOrWhiteSpace(dto.Title))
             throw new ArgumentException("Title is required.");
@@ -25,17 +26,17 @@ public class EventService(IEventRepository repo)
 
         if (!dto.AllowOverlap)
         {
-            if ( repo.HasOverlap(dto.StartTime, dto.EndTime, null))
-                return (Map(ToEntity(dto)), true);
+            if (repo.HasOverlap(dto.StartTime, dto.EndTime, null, userId))
+                return (Map(ToEntity(dto, userId)), true);
         }
 
-        var saved = repo.Add(ToEntity(dto));
+        var saved = repo.Add(ToEntity(dto, userId));
         return (Map(saved), false);
     }
 
-    public  (EventResponseDto dto, bool hasOverlap) Update(int id, UpdateEventDto dto)
+    public (EventResponseDto dto, bool hasOverlap) Update(int id, UpdateEventDto dto, int userId)
     {
-        var entity =  repo.GetById(id)
+        var entity = repo.GetById(id, userId)
             ?? throw new KeyNotFoundException();
         if (string.IsNullOrWhiteSpace(dto.Title))
             throw new ArgumentException("Title is required.");
@@ -46,7 +47,7 @@ public class EventService(IEventRepository repo)
 
         if (!dto.AllowOverlap)
         {
-            if ( repo.HasOverlap(dto.StartTime, dto.EndTime, id))
+            if (repo.HasOverlap(dto.StartTime, dto.EndTime, id, userId))
                 return (Map(entity), true);
         }
 
@@ -60,9 +61,9 @@ public class EventService(IEventRepository repo)
         return (Map(repo.Update(entity)), false);
     }
 
-    public void Delete(int id)
+    public void Delete(int id, int userId)
     {
-        var e = repo.GetById(id)
+        var e = repo.GetById(id, userId)
             ?? throw new KeyNotFoundException();
         repo.Delete(e);
     }
@@ -98,8 +99,9 @@ public class EventService(IEventRepository repo)
         AllowOverlap = e.AllowOverlap
     };
 
-    private static Event ToEntity(CreateEventDto d) => new() //DTO -> Entity
+    private static Event ToEntity(CreateEventDto d, int userId) => new() //DTO -> Entity
     {
+        UserId = userId,
         Title = d.Title.Trim(),
         Description = d.Description,
         Location = d.Location,

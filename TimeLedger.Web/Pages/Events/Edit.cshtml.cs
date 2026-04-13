@@ -24,7 +24,11 @@ public class EditModel : PageModel
 
     public  IActionResult OnGet(int id)
     {
-        var ev =  _svc.GetById(id);
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
+        var ev =  _svc.GetById(id, userId.Value);
         if (ev is null)
             return NotFound();
 
@@ -43,12 +47,16 @@ public class EditModel : PageModel
 
     public  IActionResult OnPost()
     {
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) =  _svc.Update(EventId, Input);
+            var (_, hasOverlap) =  _svc.Update(EventId, Input, userId.Value);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

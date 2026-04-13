@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
 using TimeLedger.Core.Services;
@@ -16,8 +16,13 @@ public class IndexModel : PageModel
 
     public IEnumerable<EventResponseDto> Events { get; set; } = [];
 
-    public void OnGet()
+    public IActionResult OnGet()
     {
-        Events = _svc.GetAll();
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
+        Events = _svc.GetAll(userId.Value);
+        return Page();
     }
 }
