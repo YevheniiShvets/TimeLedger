@@ -23,13 +23,13 @@ public class EditModel : PageModel
 
     public bool ShowOverlapWarning { get; set; }
 
-    public  IActionResult OnGet(int id)
+    public IActionResult OnGet(int id)
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        var ev =  _svc.GetById(id, EventOwnerType.User, userId.Value);
+        var ev = _svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
 
@@ -46,7 +46,7 @@ public class EditModel : PageModel
         return Page();
     }
 
-    public  IActionResult OnPost()
+    public IActionResult OnPost()
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)
@@ -57,7 +57,7 @@ public class EditModel : PageModel
 
         try
         {
-            var (_, hasOverlap) =  _svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
+            var (_, hasOverlap) = _svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

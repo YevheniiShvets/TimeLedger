@@ -20,4 +20,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\TimeLedger.Core\TimeLedger.Core.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -8,6 +8,7 @@ namespace TimeLedger.Pages.Groups;
 public class IndexModel(GroupService groupService) : PageModel
 {
     public IEnumerable<GroupInfoDto> Groups { get; private set; } = [];
+    public int CurrentUserId { get; private set; }
 
     public IActionResult OnGet()
     {
@@ -15,6 +16,7 @@ public class IndexModel(GroupService groupService) : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
+        CurrentUserId = userId.Value;
         Groups = groupService.GetAll(userId.Value);
         return Page();
     }

@@ -9,47 +9,58 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
     public IEnumerable<GroupInfoDto> GetAll(int actorUserId)
         => groupRepository.GetAllGroups(actorUserId).Select(Map);
 
-    public GroupInfoDto GetById(int id, int actorUserId)
+    public GroupInfoDto GetById(int groupId, int userId)
     {
-        var group = GetExistingGroup(id, actorUserId);
-        var members = GetMembers(group.Id, actorUserId).ToList();
+        var group = GetAccessibleGroup(groupId, userId);
+        var members = groupRepository.GetGroupMembers(group.Id)
+            .Append(group.OwnerId)
+            .Distinct()
+            .Select(id => userRepository.GetById(id) ?? throw new InvalidOperationException($"User {id} not found"))
+            .Select(MapUser).ToList();
         return Map(group, members);
     }
 
-    public GroupInfoDto Create(CreateGroupDto dto, int actorUserId)
+    public GroupInfoDto Create(CreateGroupDto dto, int userId)
     {
-        ValidateName(dto.Name);
+        ValidateForm(dto.Name);
 
-        var group = groupRepository.CreateGroup(ToEntity(dto, actorUserId));
+        var group = groupRepository.CreateGroup(ToEntity(dto, userId));
         return Map(group);
     }
 
-    public GroupInfoDto Update(int id, UpdateGroupDto dto, int actorUserId)
+    public GroupInfoDto Update(int groupId, UpdateGroupDto dto, int userId)
     {
-        ValidateName(dto.Name);
+        var group = GetAccessibleGroup(groupId, userId);
+        EnsureOwner(group, userId);
 
-        var group = GetExistingGroup(id, actorUserId);
+        ValidateForm(dto.Name);
+
         group.Name = dto.Name.Trim();
-
         var updatedGroup = groupRepository.UpdateGroup(group);
-        var members = GetMembers(updatedGroup.Id, actorUserId).ToList();
+        var members = groupRepository.GetGroupMembers(updatedGroup.Id)
+            .Append(updatedGroup.OwnerId)
+            .Distinct()
+            .Select(id => userRepository.GetById(id) ?? throw new InvalidOperationException($"User {id} not found"))
+            .Select(MapUser).ToList();
         return Map(updatedGroup, members);
     }
 
-    public void Delete(int id, int actorUserId)
+    public void Delete(int id, int userId)
     {
-        GetExistingGroup(id, actorUserId);
-        groupRepository.DeleteGroup(id, actorUserId);
+        var group = GetAccessibleGroup(id, userId);
+        EnsureOwner(group, userId);
+        groupRepository.DeleteGroup(group.Id, userId);
     }
 
-    public void AddMember(int groupId, AddMemberDto dto, int actorUserId)
+    public void AddMember(int groupId, AddMemberDto dto, int userId)
     {
-        ValidateUserId(dto.UserId);
+        ValidateEmail(dto.Email);
 
-        GetExistingGroup(groupId, actorUserId);
-        var user = GetExistingUser(dto.UserId);
+        var group = GetAccessibleGroup(groupId, userId);
+        EnsureOwner(group, userId);
+        var user = userRepository.GetByEmail(dto.Email.Trim()) ?? throw new InvalidOperationException("User not found");
 
-        if (groupRepository.IsMember(groupId, user.Id))
+        if (user.Id == group.OwnerId || groupRepository.IsMember(groupId, user.Id))
             throw new InvalidOperationException("User is already a member of this group");
 
         groupRepository.AddGroupMember(groupId, user.Id);
@@ -57,10 +68,16 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
 
     public void RemoveMember(int groupId, int userId, int actorUserId)
     {
-        ValidateUserId(userId);
+        if (userId < 1)
+            throw new ArgumentException("User is required.");
 
-        GetExistingGroup(groupId, actorUserId);
-        GetExistingUser(userId);
+        var group = GetAccessibleGroup(groupId, actorUserId);
+        EnsureOwner(group, actorUserId);
+
+        if (userId == group.OwnerId)
+            throw new InvalidOperationException("Owner cannot be removed from the group");
+
+        
 
         if (!groupRepository.IsMember(groupId, userId))
             throw new InvalidOperationException("User is not a member of this group");
@@ -68,38 +85,27 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
         groupRepository.RemoveGroupMember(groupId, userId);
     }
 
-    public IEnumerable<AccountInfoDto> GetMembers(int groupId, int actorUserId)
+    public IEnumerable<AccountInfoDto> GetMembers(int groupId, int userId)
     {
-        GetExistingGroup(groupId, actorUserId);
-
-        return groupRepository.GetGroupMembers(groupId)
-            .Select(GetExistingUser)
+        var group = GetAccessibleGroup(groupId, userId);
+        return groupRepository.GetGroupMembers(group.Id)
+            .Append(group.OwnerId)
+            .Distinct()
+            .Select(id => userRepository.GetById(id) ?? throw new InvalidOperationException($"User {id} not found"))
             .Select(MapUser);
     }
 
-    // Private helpers
+
+// Private helpers
     
     
-    private static void ValidateName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidOperationException("Group name is required");
-
-        if (name.Trim().Length > 100)
-            throw new InvalidOperationException("Group name must be 100 characters or less");
-    }
-
-    private static void ValidateUserId(int userId)
-    {
-        if (userId < 1)
-            throw new InvalidOperationException("User is required");
-    }
-
-    private Group GetExistingGroup(int id, int actorUserId)
+    
+    private Group GetAccessibleGroup(int groupId, int actorUserId)
     {
         try
         {
-            return groupRepository.GetGroupById(id, actorUserId);
+            return groupRepository.GetGroupById(groupId, actorUserId)
+                ?? throw new InvalidOperationException("Group not found or access denied");
         }
         catch (KeyNotFoundException)
         {
@@ -107,51 +113,64 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
         }
     }
 
-    private User GetExistingUser(int id)
+    private static void ValidateForm(string name)
     {
-        var user = userRepository.GetById(id);
-        return user ?? throw new InvalidOperationException("User not found");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Group name is required.");
+        if (name.Trim().Length > 100)
+            throw new ArgumentException("Group name cannot exceed 100 characters.");
     }
 
-    private static Group ToEntity(CreateGroupDto dto, int actorUserId)
+    private static void ValidateEmail(string email)
     {
-        return new Group
-        {
-            OwnerId = actorUserId,
-            Name = dto.Name.Trim()
-        };
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email is required.");
+
+        if (email.Trim().Length > 254)
+            throw new ArgumentException("Email cannot exceed 254 characters.");
     }
 
-    private static GroupInfoDto Map(Group group)
+    private static void EnsureOwner(Group group, int userId)
     {
-        return new GroupInfoDto
-        {
-            Id = group.Id,
-            Name = group.Name,
-            Members = []
-        };
+        if (group.OwnerId != userId)
+            throw new InvalidOperationException("Only the group owner can modify this group");
     }
 
-    private static GroupInfoDto Map(Group group, List<AccountInfoDto> members)
+    private static Group ToEntity(CreateGroupDto dto, int userId) => new()
     {
-        return new GroupInfoDto
-        {
-            Id = group.Id,
-            Name = group.Name,
-            Members = members
-        };
-    }
+        OwnerId = userId,
+        Name = dto.Name.Trim()
+    };
+
+    private static GroupInfoDto Map(Group group) => new()
+    {
+        Id = group.Id,
+        OwnerId = group.OwnerId,
+        Name = group.Name,
+        Members = []
+    };
+
+    private static GroupInfoDto Map(Group group, List<AccountInfoDto> members) => new()
+    {
+        Id = group.Id,
+        OwnerId = group.OwnerId,
+        Name = group.Name,
+        Members = members
+    };
 
     private static AccountInfoDto MapUser(User user) => new()
     {
         Id = user.Id,
-        Name = string.IsNullOrWhiteSpace(user.Name) ? GetDisplayName(user) : user.Name,
+        Name = GetDisplayName(user),
         Email = user.Email,
         CreatedAt = user.CreatedAt
     };
 
     private static string GetDisplayName(User user)
     {
+        if (!string.IsNullOrWhiteSpace(user.Name))
+            return user.Name;
+
         var atIndex = user.Email.IndexOf('@');
         return atIndex > 0 ? user.Email[..atIndex] : user.Email;
     }

@@ -18,7 +18,7 @@ public class DeleteModel : PageModel
 
     public EventResponseDto Event { get; set; } = null!;
 
-    public  IActionResult OnGet(int id)
+    public IActionResult OnGet(int id)
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)

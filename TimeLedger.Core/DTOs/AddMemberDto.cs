@@ -4,6 +4,8 @@ namespace TimeLedger.Core.DTOs;
 
 public class AddMemberDto
 {
-    [Range(1, int.MaxValue)]
-    public int UserId { get; set; }
+    [Required]
+    [EmailAddress]
+    [MaxLength(254)]
+    public string Email { get; set; } = string.Empty;
 }

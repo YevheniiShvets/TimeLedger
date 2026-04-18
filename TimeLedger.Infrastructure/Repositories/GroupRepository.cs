@@ -20,11 +20,16 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         const string sql = @"
         SELECT Id, OwnerId, Name
         FROM Groups
-        WHERE OwnerId = @OwnerId
+        WHERE OwnerId = @ActorUserId
+           OR Id IN (
+               SELECT GroupId
+               FROM GroupMembers
+               WHERE UserId = @ActorUserId
+           )
         ORDER BY Name";
 
         using var command = new SqlCommand(sql, connection);
-        command.Parameters.Add("@OwnerId", SqlDbType.Int).Value = ownerId;
+        command.Parameters.Add("@ActorUserId", SqlDbType.Int).Value = ownerId;
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
@@ -46,11 +51,19 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         const string sql = @"
         SELECT Id, OwnerId, Name
         FROM Groups
-        WHERE Id = @Id AND OwnerId = @OwnerId";
+        WHERE Id = @Id
+          AND (
+              OwnerId = @ActorUserId
+              OR Id IN (
+                  SELECT GroupId
+                  FROM GroupMembers
+                  WHERE UserId = @ActorUserId
+              )
+          )";
 
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-        command.Parameters.Add("@OwnerId", SqlDbType.Int).Value = ownerId;
+        command.Parameters.Add("@ActorUserId", SqlDbType.Int).Value = ownerId;
         using var reader = command.ExecuteReader();
         if (reader.Read())
         {
@@ -96,6 +109,7 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = group.Name;
         command.Parameters.Add("@Id", SqlDbType.Int).Value = group.Id;
         command.Parameters.Add("@OwnerId", SqlDbType.Int).Value = group.OwnerId;
+        
         command.ExecuteNonQuery();
         return group;
     }
@@ -112,7 +126,10 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         command.Parameters.Add("@OwnerId", SqlDbType.Int).Value = ownerId;
-        command.ExecuteNonQuery();
+        
+        var  rowsAffected = command.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new InvalidOperationException("Failed to delete group");
     }
 
     public IEnumerable<int> GetGroupMembers(int groupId)
@@ -149,7 +166,10 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@GroupId", SqlDbType.Int).Value = groupId;
         command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-        command.ExecuteNonQuery();
+        var rowsAffected = command.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new InvalidOperationException("Failed to add member to group. The group or user may not exist.");
+        
     }
 
     public void RemoveGroupMember(int groupId, int userId)
@@ -164,7 +184,10 @@ public class GroupRepository(IConfiguration configuration) : IGroupRepository
         using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@GroupId", SqlDbType.Int).Value = groupId;
         command.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-        command.ExecuteNonQuery();
+        
+        var  rowsAffected = command.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new InvalidOperationException("Failed to remove member from group. The group or user may not exist.");
     }
 
     public bool IsMember(int groupId, int userId)

@@ -1,0 +1,41 @@
+﻿@startuml TimeLedger_ERD
+!define TABLENAME(name) class name << (T, #FFAAAA) >>
+
+TABLENAME(Users) {
+    + id: INT << PK >>
+    - name: NVARCHAR(100)
+    - email: NVARCHAR(254) << UNIQUE >>
+    - passwordHash: NVARCHAR(1000)
+    - createdAt: DATETIME2
+}
+
+TABLENAME(Groups) {
+    + id: INT << PK >>
+    - ownerId: INT << FK >>
+    - name: NVARCHAR(100)
+}
+
+TABLENAME(Events) {
+    + id: INT << PK >>
+    - ownerType: TINYINT << ENUM: 1=User, 2=Group >>
+    - ownerId: INT
+    - title: NVARCHAR(200)
+    - description: NVARCHAR(1000)
+    - location: NVARCHAR(300)
+    - startTime: DATETIME2
+    - endTime: DATETIME2
+    - allowOverlap: BIT
+}
+
+TABLENAME(GroupMembers) {
+    + groupId: INT << PK, FK >>
+    + userId: INT << PK, FK >>
+}
+
+Users ||--o{ Groups: "1:M (owns)"
+Users ||--o{ Events: "1:M logical owner (ownerType=User)"
+Groups ||--o{ Events: "1:M logical owner (ownerType=Group)"
+GroupMembers }o--|| Users: "references"
+GroupMembers }o--|| Groups: "references"
+
+@enduml

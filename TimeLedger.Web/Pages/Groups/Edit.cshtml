@@ -1,0 +1,42 @@
+﻿@page "{id:int}"
+@model TimeLedger.Pages.Groups.Edit
+@{
+    ViewData["Title"] = "Edit Group";
+}
+
+<div class="form-container auth-form-container">
+    <a asp-page="/Groups/Index" class="form-back">← Back to Groups</a>
+    <h1 class="form-title">Edit Group</h1>
+    <p class="form-subtitle">Update group details</p>
+
+    @if (!Model.IsOwner)
+    {
+        <div class="empty-state">
+            <p>Only the group owner can edit this group.</p>
+        </div>
+    }
+
+    <form method="post" asp-page-handler="Update" asp-route-id="@Model.Group.Id">
+        <div class="form-group">
+            <label asp-for="Input.Name">Group Name <span class="required">*</span></label>
+            <input asp-for="Input.Name" placeholder="e.g., Project Team" />
+            <span asp-validation-for="Input.Name" class="field-error"></span>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="btn-row">
+            @if (Model.IsOwner)
+            {
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <a asp-page="/Groups/Delete" asp-route-id="@Model.Group.Id" class="btn-danger">Delete</a>
+            }
+            <a asp-page="/Groups/ManageMembers" asp-route-id="@Model.Group.Id" class="btn-secondary">Manage Members</a>
+            <a asp-page="/Groups/Index" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

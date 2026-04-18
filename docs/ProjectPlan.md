@@ -1,54 +1,79 @@
 # TimeLedger Project Plan — Iteration 2
 
+## Alignment with Learning Outcomes
+
+This document supports:
+- **LO3 (Implementation)**: Describes the iterative software development process, secure and maintainable applications built in C#/.NET with ASP.NET Core Razor Pages, a relational SQL Server database, and application of SOLID principles.
+- **LO4 (Managing)**: Documents the use of version control (Git), automated testing (NUnit), and an iterative development process to improve code quality.
+- **LO5 (Professional Standard)**: Outlines collaboration, stakeholder communication, and project organization in an iterative process.
+
 ## 1. Project overview
 
-`TimeLedger` is a Razor Pages scheduling application that supports event management and user accounts.
-The original plan emphasized a broader advanced-planner vision, but the current implementation focuses on the iteration-2 account/authentication workflow plus the existing event engine.
+`TimeLedger` is a Razor Pages scheduling application that supports user accounts, event management, and group collaboration.
+The current implementation focuses on authenticated user experiences with user-owned event management, account management, and group creation with member management. The backend event model also supports group ownership, but the current UI exposes user-owned event flows.
 
 ## 2. Current status
 
-### Implemented
+### Fully Implemented
 
-- event create, edit, delete, and list pages
-- overlap detection in the event service and repository
-- user registration and login
-- session-based account state
-- account info and account edit pages
-- sidebar that shows the signed-in user name and email
+- User registration and login with session-based authentication
+- Account information viewing and editing
+- Event CRUD (create, edit, delete, list) with overlap detection for user-owned events
+- Event ownership support in the backend via `OwnerType` and `OwnerId`
+- Group creation and ownership
+- Group member management (add/remove members by email)
+- Per-user event filtering in the events UI
+- Group list visibility for owners and members
+- Authorization checks for event and group ownership
+- Sidebar account display showing signed-in user, account links, and logout
+- SQL Server persistence with repository pattern
 
-### Planned or still missing
+### Planned or deferred to iteration 3
 
-- event ownership per account
-- per-user event filtering and access checks
-- groups, invitations, and membership flows
+- Group invitation workflow (pending, accept, decline)
+- Group-owned event creation in the UI
+- Advanced scheduling features
 
 ## 3. Iteration 2 objectives
 
-### Main objective
+### Main objectives
 
-Deliver a usable authenticated experience for the scheduling app by ensuring that users can create accounts, log in, view and update profile data, and continue using the event pages in a session-aware UI.
+1. Deliver authenticated event management for user-owned events
+2. Implement group creation and membership management
+3. Establish per-user data visibility and authorization checks
+4. Maintain documentation alignment with the actual Razor Pages implementation
 
-### Supporting objective
+### Supporting objectives
 
-Keep the documentation synchronized with the live Razor Pages implementation so the analysis, design, and plan documents describe what actually exists instead of the older PDF-era stack.
+1. Keep documentation synchronized with the live codebase
+2. Establish SOLID layered design patterns for repositories, services, and pages
+3. Keep the backend event ownership model ready for future group-based event creation in the UI
 
 ## 4. Scope
 
-### In scope for the current solution
+### In scope for iteration 2 (Implemented)
 
-- account registration and login
-- account information and edit screens
-- session state using `AuthSession`
-- shared sidebar account display
-- event CRUD and overlap handling
-- SQL Server persistence through repositories
+- Account registration and login with session state
+- Account information and edit screens
+- Session state management using `AuthSession`
+- Sidebar account display with links and logout
+- Event CRUD with overlap detection
+- Event ownership assignment to users in the current UI via `OwnerId` and `OwnerType`
+- Per-user event filtering and authorization
+- Group creation, ownership, and basic info
+- Group member management (add/remove by email)
+- Group-specific visibility (owners and members only)
+- SQL Server persistence through repository pattern
+- DTOs for all major flows
+- Service layer validation and business logic
 
-### Deferred to a later iteration
+### Deferred to a later iteration (IT3)
 
-- event ownership assignment
-- authorization checks around event ownership
-- group creation and invitations
-- invitation acceptance/decline flows
+- Group-owned event creation in the UI
+- Group invitations workflow (invite, accept, decline)
+- Persistence of group invitations and membership status history
+- Recurring events
+- User notifications for group invitations
 
 ## 5. Technology stack
 
@@ -63,40 +88,61 @@ Keep the documentation synchronized with the live Razor Pages implementation so 
 
 ## 6. Iteration 2 work plan
 
-### Phase 1 — Document alignment
+### Phase 1 — Document alignment ✓
 
-- rewrite the outdated PDF content into Markdown
-- align terminology with `UseCasesIT2.md`
-- add source traceability for major claims
+- Rewrote outdated PDF content into Markdown
+- Aligned terminology with `UseCasesIT2.md` and `UseCasesIT3.md`
+- Added source traceability for major claims
 
-### Phase 2 — Authentication and account flow
+### Phase 2 — Authentication and account flow ✓
 
-- confirm login/register behavior
-- keep the sidebar account state in sync with session values
-- verify account info and edit navigation
+- Confirmed login/register behavior with email/password
+- Implemented sidebar account state tied to session
+- Verified account info and edit navigation with redirects
 
-### Phase 3 — Event workflow review
+### Phase 3 — Event workflow with ownership ✓
 
-- keep CRUD and overlap behavior consistent
-- identify missing event ownership rules for future work
+- Implemented event ownership support via `OwnerId` and `OwnerType`
+- Added per-user event filtering in the current events UI and service layer
+- Enforced authorization checks for event access
 
-### Phase 4 — Future scope definition
+### Phase 4 — Group management ✓
 
-- capture groups and invitations as planned items, not implemented features
-- define the next iteration boundary clearly
+- Implemented group creation and ownership model
+- Built group member management (add/remove by email)
+- Enforced group-specific visibility rules
+- Created repository and service for group operations
+
+### Phase 5 — Future scope definition ✓
+
+- Captured invitations as planned items for IT3
+- Defined IT3 boundary clearly in separate use-case document
+- Kept the event ownership model ready for future group-based event creation in the UI
 
 ## 7. Risks and mitigations
 
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Documentation drift | Readers rely on outdated architecture assumptions | Keep the Markdown docs tied to source files and current runtime behavior |
-| Scope creep | Iteration 2 becomes too broad | Mark group features and ownership rules as deferred until the data model supports them |
+| Scope creep | Iteration 2 becomes too broad | Keep group invitations and group-owned event pages deferred until the UI and tests are ready |
 | Auth/session mismatch | UI and page models may disagree on signed-in state | Centralize session keys with `AuthSession` and update the layout from session values |
 | Data access inconsistency | Different repositories may behave differently | Keep SQL repositories as the default implementation and document the in-memory repository as optional |
 
 ## 8. Definition of done
 
 Iteration 2 is considered complete when:
+
+- ✓ All account registration and login flows are functional
+- ✓ Event ownership is enforced with authorization checks
+- ✓ Group creation and member management are working
+- ✓ Authorization prevents unauthorized access to resources
+- ✓ Documentation (Analysis, Design, Plan) reflects the current implementation
+- ✓ Use cases separate IT2 (implemented) from IT3 (planned)
+- ✓ All Razor Pages and services follow SOLID layered design
+- ✓ DTOs properly separate presentation from domain models
+- ✓ Repositories provide clean persistence abstraction
+
+Additional checks:
 
 - registration and login work end to end
 - account info and edit pages are accessible to signed-in users
@@ -107,4 +153,4 @@ Iteration 2 is considered complete when:
 ## 9. Notes for future iterations
 
 Future work should only introduce features that can be supported by the current domain model or by explicitly extending it.
-In particular, event ownership and groups will require new fields, repository methods, and page-level authorization rules before the iteration-2 use cases can be fully fulfilled.
+In particular, group invitations and group-owned event creation will require new pages, repository methods, and page-level workflows before they can be exposed in the UI.

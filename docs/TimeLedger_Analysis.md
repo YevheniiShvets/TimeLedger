@@ -1,9 +1,15 @@
 ﻿# TimeLedger Analysis — Iteration 2
 
+| Project Name: | TimeLedger      |
+|---------------|-----------------|
+| Date:         | 2026-04-17      |
+| Author:       | Yevhenii Shvets |
+| Version:      | 2.0             |
+| Iteration:    | 2               |
+
 ## 1. Purpose
 
-This document replaces the outdated PDF analysis with a Markdown version that reflects the current `TimeLedger` solution.
-It captures the real implementation state of iteration 2 and separates implemented features from planned scope.
+This document captures the functional requirements and user specifications for the `TimeLedger` solution, aligned with iteration 2 implementation. It provides requirements and separates delivered features from planned scope for future iterations.
 
 ## 2. Product overview
 
@@ -26,13 +32,13 @@ The solution currently focuses on:
 
 ### 3.2 Technology stack
 
-| Area | Current implementation |
-|---|---|
-| Web UI | ASP.NET Core Razor Pages |
-| Target framework | `net10.0` |
+| Area | Current implementation           |
+|---|----------------------------------|
+| Web UI | ASP.NET Core Razor Pages         |
+| Target framework | `.NET 10.0`                      |
 | Persistence | SQL Server via `Microsoft.Data.SqlClient` |
-| Password hashing | `BCrypt.Net-Next` |
-| State management | ASP.NET Core session |
+| Password hashing | `BCrypt`                         |
+| State management | ASP.NET Core session             |
 | Validation | Data annotations + service validation |
 
 ### 3.3 Implemented features
@@ -42,32 +48,38 @@ The solution currently focuses on:
 - View the signed-in account in the sidebar when available
 - View account information in `/Account/Info`
 - Edit account details in `/Account/Edit`
-- View event list in `/Events/Index`
-- Create, update, and delete events
+- Create, view, edit, and delete events
 - Detect time overlaps in the event service and repository
+- Events are owned by either users or groups (via `OwnerType` enum)
+- Users only see and can modify events they own
+- Create groups and become group owner
+- Add and remove group members by email
+- View groups where user is owner or member
+- Only group owners can modify group details and membership
 - Render forms and event cards with shared CSS files
+- per-user event filtering and authorization in service layer
 
-### 3.4 Partially implemented or planned items
+### 3.4 Planned items (Iteration 3)
 
-- Event ownership is not yet enforced in the event model or repository layer
-- Per-user event filtering is not implemented; `Events/Index` currently shows all events returned by the repository
-- Group management, invitations, and membership workflows are described in the iteration-2 use cases but are not present in the current codebase
-- The solution includes `InMemoryEventRepository`, but the web app is wired to the SQL repository implementation
+- Event creation by groups (events with `OwnerType = Group`)
+- Group invitation workflow (invite, accept, decline statuses)
+- Persistence of invitation records and membership history
+- Calendar view with day-based event grouping
+- Advanced permission models for group events
+- Recurring events and scheduling features
 
 ## 4. Problem statement
 
-The original project goal was broader than the current codebase. The live solution is now centered on account management and schedule organization, but the older documentation still describes a React-based architecture, JWT authentication, and EF Core persistence.
-Those details are no longer accurate and should be replaced with the current Razor Pages, session-based, repository-driven design.
+The original project goal was to build an advanced scheduling application.
+The live implementation now includes account management, authenticated event scheduling, group collaboration, and proper authorization checks.
 
-## 5. Stakeholders and user roles
+## 5. Stakeholders
 
-| Role | Needs |
-|---|---|
-| New user | Create an account and start using the app |
-| Registered user | Log in, manage events, and update profile data |
-| Authenticated user | Access account pages and schedule views |
-| Future group owner | Create and manage groups once group features are implemented |
-| Future invited member | Respond to invitations once membership workflows exist |
+| Stakeholder | Role | Interests                                                                  |
+|---|---|----------------------------------------------------------------------------|
+| University Student | Primary End User | Reliable schedule management, conflict prevention, simple UI               |
+| Developer | Builder and Maintainer | Clean architecture, testable code, clear requirements                      |
+| Academic Assessor | Evaluator | Demonstrated iterative process, clean layered design, proper documentation |
 
 ## 6. Functional requirements for iteration 2
 
@@ -77,43 +89,58 @@ Those details are no longer accurate and should be replaced with the current Raz
 |---|---|---|
 | FR-10 | Register users with email and password | Implemented |
 | FR-11 | Authenticate users via session auth | Implemented |
-| FR-12 | Associate events with the user who created them | Planned |
-| FR-13 | Prevent access to other users’ events | Planned |
-| FR-14 | Allow users to create groups and invite members | Planned |
+| FR-12 | Associate events with the user who created them | Implemented |
+| FR-13 | Prevent access to other users' events | Implemented |
+| FR-14 | Allow users to create groups and become group owners | Implemented |
+| FR-15 | Allow group owners to add/remove members by email | Implemented |
+| FR-16 | Restrict group access to owners and members | Implemented |
+| FR-17 | Allow users to log out and clear session | Implemented |
+| FR-18 | Allow users to view and edit account information | Implemented |
 
-### Supporting application behavior
+### Planned for iteration 3 or later
 
-- The sidebar shows the signed-in account name and email when session data exists.
-- When no user is signed in, the sidebar exposes Log In and Register links.
-- Account pages redirect unauthenticated users to the login page.
+| ID | Requirement | Status |
+|---|---|---|
+| FR-20 | Allow events to be created by groups | Planned |
+| FR-21 | Implement group invitation workflow (invite, accept, decline) | Planned |
+| FR-22 | Store invitation records and membership history | Planned |
+| FR-23 | Display invitations in user interface | Planned |
 
 ## 7. Non-functional requirements
 
-- **Security**: passwords are stored as BCrypt hashes; session data uses safe keys in `AuthSession`
+- **Security**: passwords are stored as BCrypt hashes
 - **Usability**: forms provide inline validation and shared layout styling
-- **Maintainability**: business logic is isolated in services, persistence in repositories, and UI in Razor Pages
-- **Traceability**: source files and use-case documents should remain aligned with the Markdown docs
+- **Maintainability**: business logic is isolated in services, persistence in repositories, and UI in web layer
 
-## 8. Constraints and assumptions
+## 8. Use Case Summary
 
-- The app uses SQL Server connection strings configured in the web project.
-- `TimeLedger.Web` is the composition root and registers the repository and service implementations.
-- Session state is required for authentication and account display.
-- Group-related use cases remain future work until matching entities, repositories, services, and pages are added.
+Full use cases are documented in `UseCasesIT2.md`, but the following table summarizes the main user interactions implemented in iteration 2.
 
-## 9. Primary source mapping
+| Use Case Number | Use Case Name | Short Description |
+|-----------------|---------------|-------------------|
+| UC-10 | Register User | A new user creates an account using name, email, and password. |
+| UC-11 | Log In | A registered user signs in and starts an authenticated session. |
+| UC-12 | Manage Own Events | An authenticated user can create, view, edit, and delete only their own events. |
+| UC-13 | Log Out | An authenticated user ends their session. |
+| UC-14 | View Account Info | An authenticated user views their account profile details. |
+| UC-15 | Edit Account Info | An authenticated user updates profile details and/or password. |
+| UC-16 | Create Group | An authenticated user creates a new group and becomes its owner. |
+| UC-17 | View Accessible Groups | A user views groups they own or belong to. |
+| UC-18 | Manage Group Members | A group owner adds/removes members and maintains group details. |
 
-| Document claim | Source files |
-|---|---|
-| Session-based auth | `TimeLedger.Web/Program.cs`, `TimeLedger.Core/Services/AuthSession.cs` |
-| Register/login flow | `TimeLedger.Web/Pages/Account/Register.cshtml.cs`, `TimeLedger.Web/Pages/Account/Login.cshtml.cs`, `TimeLedger.Core/Services/UserService.cs` |
-| Account view/edit flow | `TimeLedger.Web/Pages/Account/Info.cshtml.cs`, `TimeLedger.Web/Pages/Account/Edit.cshtml.cs` |
-| Event CRUD flow | `TimeLedger.Web/Pages/Events/*.cshtml.cs`, `TimeLedger.Core/Services/EventService.cs` |
-| SQL persistence | `TimeLedger.Infrastructure/Repositories/UserRepository.cs`, `TimeLedger.Infrastructure/Repositories/EventRepository.cs` |
-| Current UI navigation | `TimeLedger.Web/Pages/Shared/_Layout.cshtml` |
+## 9. Data Transfer Objects (DTOs)
+
+DTOs define the data contracts between the Presentation layer and the core services.
+
+### Example of what DTOs do in this project (Event management)
+
+**Event flow**
+- `CreateEventDto`: carries input for creating an event.
+- `UpdateEventDto`: carries input for editing an event.
+- `EventResponseDto`: returns event data to the UI, including computed duration text.
 
 ## 10. Summary
 
-Iteration 2 has moved the application from a simple event-only planner to a user-aware Razor Pages application.
-The most important documentation correction is that authentication and account management are implemented with session state, while group management and per-user event ownership are still planned.
+Iteration 2 has evolved the application from a simple event planner into a multi-user scheduling platform with account management and event ownership.
+The most significant improvements are the introduction of authorization checks, event and group ownership models, and SOLID layered architecture.
 
