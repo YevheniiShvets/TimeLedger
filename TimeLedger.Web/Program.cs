@@ -14,9 +14,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<GroupService>();
 
 builder.Services.AddSession(options =>
 {

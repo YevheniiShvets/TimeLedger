@@ -1,21 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
-using TimeLedger.Core.Models;
 using TimeLedger.Core.Services;
 
-namespace TimeLedger.Pages.Events;
+namespace TimeLedger.Pages.Groups;
 
-public class IndexModel : PageModel
+public class IndexModel(GroupService groupService) : PageModel
 {
-    private readonly EventService _svc;
-
-    public IndexModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
-    public IEnumerable<EventResponseDto> Events { get; set; } = [];
+    public IEnumerable<GroupInfoDto> Groups { get; private set; } = [];
+    public int CurrentUserId { get; private set; }
 
     public IActionResult OnGet()
     {
@@ -23,7 +16,9 @@ public class IndexModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        Events = _svc.GetAll(EventOwnerType.User, userId.Value);
+        CurrentUserId = userId.Value;
+        Groups = groupService.GetAll(userId.Value);
         return Page();
     }
 }
+

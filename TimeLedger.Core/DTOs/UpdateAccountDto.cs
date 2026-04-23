@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TimeLedger.Core.DTOs;
 
@@ -14,9 +15,11 @@ public class UpdateAccountDto
     public string Email { get; set; } = string.Empty;
 
     [Required]
+    [PasswordPropertyText]
     public string Password { get; set; } = string.Empty;
 
     [Required]
+    [PasswordPropertyText]
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
     public string ConfirmPassword { get; set; } = string.Empty;
 }

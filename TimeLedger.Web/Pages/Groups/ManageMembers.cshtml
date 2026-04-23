@@ -1,0 +1,81 @@
+﻿@page "{id:int}"
+@model TimeLedger.Pages.Groups.ManageModel
+@{
+    ViewData["Title"] = "Manage Group";
+}
+<div class="form-container">
+    <a asp-page="/Groups/Index" class="form-back">← Back to Groups</a>
+    <h1 class="form-title">Manage Group Members</h1>
+    <p class="form-subtitle">Add and remove members for this group</p>
+    @if (Model.IsOwner)
+    {
+        
+    }
+    else
+    {
+        <div class="empty-state">
+            <p>You can view this group, but only the owner can add or remove members.</p>
+        </div>
+    }
+    <hr />
+    <h2 class="form-title">Members</h2>
+    <p class="form-subtitle">Current members: @Model.Group.Members.Count</p>
+    @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+    {
+        <div class="empty-state">
+            <p>@Model.StatusMessage</p>
+        </div>
+    }
+    @if (Model.IsOwner)
+    {
+        <form method="post" asp-page-handler="AddMember" asp-route-id="@Model.Group.Id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="AddMemberInput.Email">Email <span class="required">*</span></label>
+                    <input asp-for="AddMemberInput.Email" type="email" placeholder="e.g., member@email.com" />
+                    <span asp-validation-for="AddMemberInput.Email" class="field-error"></span>
+                </div>
+                <div class="form-group" style="display:flex;align-items:end;">
+                    <button type="submit" class="btn-primary">Add Member</button>
+                </div>
+            </div>
+        </form>
+    }
+    @if (!Model.Group.Members.Any())
+    {
+        <div class="empty-state">
+            <p>No members yet.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var member in Model.Group.Members)
+        {
+            <div class="event-card">
+                <div class="event-card-left">
+                    <span class="event-title">@member.Name</span>
+                    <div class="event-meta">
+                        <span>@member.Email</span>
+                        <span>Id: @member.Id</span>
+                        @if (member.Id == Model.Group.OwnerId)
+                        {
+                            <span>Owner</span>
+                        }
+                    </div>
+                </div>
+                <div class="event-card-actions">
+                    @if (Model.IsOwner && member.Id != Model.Group.OwnerId)
+                    {
+                        <form method="post" asp-page-handler="RemoveMember" asp-route-id="@Model.Group.Id" asp-route-userId="@member.Id">
+                            <button type="submit" class="btn-danger">Remove</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    }
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

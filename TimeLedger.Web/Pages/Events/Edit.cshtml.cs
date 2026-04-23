@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.Models;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Events;
@@ -22,9 +23,13 @@ public class EditModel : PageModel
 
     public bool ShowOverlapWarning { get; set; }
 
-    public  IActionResult OnGet(int id)
+    public IActionResult OnGet(int id)
     {
-        var ev =  _svc.GetById(id);
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
+        var ev = _svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
 
@@ -41,14 +46,18 @@ public class EditModel : PageModel
         return Page();
     }
 
-    public  IActionResult OnPost()
+    public IActionResult OnPost()
     {
+        var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
+        if (!userId.HasValue)
+            return RedirectToPage("/Account/Login");
+
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) =  _svc.Update(EventId, Input);
+            var (_, hasOverlap) = _svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

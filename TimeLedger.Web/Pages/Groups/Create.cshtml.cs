@@ -1,25 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
-using TimeLedger.Core.Models;
 using TimeLedger.Core.Services;
 
+namespace TimeLedger.Pages.Groups;
 
-namespace TimeLedger.Pages.Events;
-
-public class CreateModel : PageModel
+public class CreateModel(GroupService groupService) : PageModel
 {
-    private readonly EventService _svc;
-
-    public CreateModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
     [BindProperty]
-    public CreateEventDto Input { get; set; } = new();
-
-    public bool ShowOverlapWarning { get; set; }
+    public CreateGroupDto Input { get; set; } = new();
 
     public IActionResult OnGet()
     {
@@ -30,7 +19,7 @@ public class CreateModel : PageModel
         return Page();
     }
 
-    public  IActionResult OnPost()
+    public IActionResult OnPost()
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)
@@ -41,15 +30,14 @@ public class CreateModel : PageModel
 
         try
         {
-            var (_, hasOverlap) =  _svc.Create(Input, EventOwnerType.User, userId.Value);
-            if (!hasOverlap) return RedirectToPage("Index");
-            ShowOverlapWarning = true;
-            return Page();
+            var group = groupService.Create(Input, userId.Value);
+            return RedirectToPage("/Groups/Manage", new { id = group.Id });
         }
-        catch (ArgumentException ex)
+        catch (InvalidOperationException ex)
         {
             ModelState.AddModelError(string.Empty, ex.Message);
             return Page();
         }
     }
 }
+
