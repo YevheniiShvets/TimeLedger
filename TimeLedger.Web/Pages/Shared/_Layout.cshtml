@@ -26,20 +26,27 @@
 <div class="app-layout">
     <aside class="sidebar">
         <div class="sidebar-header">
+        
             <span class="sidebar-icon">📅</span>
             <div>
                 <h2>TimeLedger</h2>
                 <p>Manage your schedule</p>
             </div>
+        
         </div>
-
-        <a href="/Events/Create" class="btn-add">+ Add Event</a>
-
+        @if (isSignedIn)
+        {
+            <a href="/Events/Create" class="btn-add">+ Add Event</a>
+        }
         <nav class="sidebar-nav">
+            @if (isSignedIn)
+            {
+            <a href="/Inbox" class="nav-link">Inbox</a>
             <p class="nav-label">Views</p>
             <a href="/Events" class="nav-link">Day View</a>
             <a href="/Groups" class="nav-link">Groups</a>
             <a href="/Groups/Create" class="nav-link">Create Group</a>
+            }
         </nav>
 
         <div class="sidebar-footer">

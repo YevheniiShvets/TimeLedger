@@ -5,17 +5,16 @@
 }
 <div class="form-container">
     <a asp-page="/Groups/Index" class="form-back">← Back to Groups</a>
-    <h1 class="form-title">Manage Group Members</h1>
-    <p class="form-subtitle">Add and remove members for this group</p>
+    
     @if (Model.IsOwner)
     {
-        
+        <h1 class="form-title">Manage Group Members</h1>
+        <p class="form-subtitle">Add and remove members for this group</p>
     }
     else
     {
-        <div class="empty-state">
-            <p>You can view this group, but only the owner can add or remove members.</p>
-        </div>
+        <h1 class="form-title">Group Members</h1>
+        <p class="form-subtitle">View current members of this group</p>
     }
     <hr />
     <h2 class="form-title">Members</h2>

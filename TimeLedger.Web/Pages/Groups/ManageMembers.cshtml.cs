@@ -40,7 +40,6 @@ public class ManageModel(GroupService groupService, IGroupInvitationService invi
         }
 
         AddMemberInput.InviteeEmail = email.Trim();
-        StatusMessage = $"Add member request received for {AddMemberInput.InviteeEmail}.";
 
         try
         {
