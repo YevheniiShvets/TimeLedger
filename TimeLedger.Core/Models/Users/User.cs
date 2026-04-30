@@ -1,4 +1,4 @@
-﻿namespace TimeLedger.Core.Models;
+﻿namespace TimeLedger.Core.Models.Users;
 
 public class User
 {

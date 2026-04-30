@@ -1,6 +1,6 @@
-﻿using TimeLedger.Core.Models;
+﻿using TimeLedger.Core.Models.Events;
 
-namespace TimeLedger.Core.Interfaces;
+namespace TimeLedger.Core.Interfaces.Events;
 
 public interface IEventRepository
 {

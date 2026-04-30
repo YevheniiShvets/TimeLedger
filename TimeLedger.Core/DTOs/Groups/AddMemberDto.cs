@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TimeLedger.Core.DTOs;
+namespace TimeLedger.Core.DTOs.Groups;
 
 public class AddMemberDto
 {

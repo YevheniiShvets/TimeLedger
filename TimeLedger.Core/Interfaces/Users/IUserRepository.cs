@@ -1,6 +1,6 @@
-﻿using TimeLedger.Core.Models;
+﻿using TimeLedger.Core.Models.Users;
 
-namespace TimeLedger.Core.Interfaces;
+namespace TimeLedger.Core.Interfaces.Users;
 
 public interface IUserRepository
 {

@@ -1,4 +1,4 @@
-﻿namespace TimeLedger.Core.DTOs;
+﻿namespace TimeLedger.Core.DTOs.Events;
 
 public class EventResponseDto
 {

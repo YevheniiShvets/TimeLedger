@@ -1,0 +1,73 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Account Layered Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Account Pages" as AccountPages <<Razor Pages>>
+  class "Account DTOs" as AccountDTOs <<DTO>>
+}
+
+package "Service" #E8F5E9 {
+  class UserService <<Service>> {
+	- userRepository: IUserRepository
+	+ Register(dto: RegisterDto): AccountInfoDto
+	+ Login(dto: LoginDto): AccountInfoDto
+	+ GetById(id: int): AccountInfoDto
+	+ Update(id: int, dto: UpdateAccountDto): AccountInfoDto
+	+ Delete(id: int): void
+  }
+
+  class User <<Model>> {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+
+  class AuthSession <<Static>> {
+	+ UserIdKey: string
+	+ UserEmailKey: string
+	+ UserNameKey: string
+  }
+}
+
+package "Repository" #FFF3E0 {
+  interface IUserRepository <<Interface>> {
+	+ GetById(id: int): User?
+	+ GetByEmail(email: string): User?
+	+ Add(user: User): User
+	+ Update(user: User): User
+	+ Delete(user: User): void
+	+ Exists(email: string): bool
+  }
+
+  class UserRepository <<Repository>> {
+	- _connectionString: string
+	+ GetById(id: int): User?
+	+ GetByEmail(email: string): User?
+	+ Add(user: User): User
+	+ Update(user: User): User
+	+ Delete(user: User): void
+	+ Exists(email: string): bool
+  }
+}
+
+AccountPages --> UserService
+AccountPages ..> AuthSession
+AccountPages --> AccountDTOs
+UserService --> AccountDTOs
+UserService --> User
+UserService ..> IUserRepository
+IUserRepository <|.. UserRepository
+UserRepository --> User
+
+@enduml
+

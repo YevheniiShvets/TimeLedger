@@ -1,0 +1,100 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Group Layered Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Group Pages" as GroupPages <<Razor Pages>>
+  class "Group DTOs" as GroupDTOs <<DTO>>
+}
+
+package "Service" #E8F5E9 {
+  class GroupService <<Service>> {
+	- groupRepository: IGroupRepository
+	- userRepository: IUserRepository
+	+ GetAll(actorUserId: int): IEnumerable<GroupInfoDto>
+	+ GetById(groupId: int, userId: int): GroupInfoDto
+	+ Create(dto: CreateGroupDto, userId: int): GroupInfoDto
+	+ Update(groupId: int, dto: UpdateGroupDto, userId: int): GroupInfoDto
+	+ Delete(id: int, userId: int): void
+	+ AddMember(groupId: int, dto: AddMemberDto, userId: int): void
+	+ RemoveMember(groupId: int, userId: int, actorUserId: int): void
+	+ GetMembers(groupId: int, userId: int): IEnumerable<AccountInfoDto>
+  }
+
+  class Group <<Model>> {
+	+ Id: int
+	+ OwnerId: int
+	+ Name: string
+  }
+
+  class User <<Model>> {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+
+  class AuthSession <<Static>> {
+	+ UserIdKey: string
+	+ UserEmailKey: string
+	+ UserNameKey: string
+  }
+}
+
+package "Repository" #FFF3E0 {
+  interface IGroupRepository <<Interface>> {
+	+ GetAllGroups(ownerId: int): IEnumerable<Group>
+	+ GetGroupById(id: int, ownerId: int): Group
+	+ CreateGroup(group: Group): Group
+	+ UpdateGroup(group: Group): Group
+	+ DeleteGroup(id: int, ownerId: int): void
+	+ GetGroupMembers(groupId: int): IEnumerable<int>
+	+ AddGroupMember(groupId: int, userId: int): void
+	+ RemoveGroupMember(groupId: int, userId: int): void
+	+ IsMember(groupId: int, userId: int): bool
+  }
+
+  interface IUserRepository <<Interface>> {
+	+ GetById(id: int): User?
+	+ GetByEmail(email: string): User?
+	+ Add(user: User): User
+	+ Update(user: User): User
+	+ Delete(user: User): void
+	+ Exists(email: string): bool
+  }
+
+  class GroupRepository <<Repository>> {
+	- _connectionString: string
+	+ GetAllGroups(ownerId: int): IEnumerable<Group>
+	+ GetGroupById(id: int, ownerId: int): Group
+	+ CreateGroup(group: Group): Group
+	+ UpdateGroup(group: Group): Group
+	+ DeleteGroup(id: int, ownerId: int): void
+	+ GetGroupMembers(groupId: int): IEnumerable<int>
+	+ AddGroupMember(groupId: int, userId: int): void
+	+ RemoveGroupMember(groupId: int, userId: int): void
+	+ IsMember(groupId: int, userId: int): bool
+  }
+}
+
+GroupPages --> GroupService
+GroupPages ..> AuthSession
+GroupPages --> GroupDTOs
+GroupService --> GroupDTOs
+GroupService --> Group
+GroupService --> User
+GroupService ..> IGroupRepository
+GroupService ..> IUserRepository
+IGroupRepository <|.. GroupRepository
+GroupRepository --> Group
+
+@enduml
+

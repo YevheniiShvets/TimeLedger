@@ -1,6 +1,6 @@
-﻿using TimeLedger.Core.Models;
+﻿using TimeLedger.Core.Models.Groups;
 
-namespace TimeLedger.Core.Interfaces;
+namespace TimeLedger.Core.Interfaces.Groups;
 
 public interface IGroupRepository
 {

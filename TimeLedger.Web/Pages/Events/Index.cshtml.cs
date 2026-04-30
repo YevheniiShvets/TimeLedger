@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Events;

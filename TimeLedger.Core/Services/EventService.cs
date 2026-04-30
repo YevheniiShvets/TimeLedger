@@ -1,6 +1,9 @@
 ﻿using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
 using TimeLedger.Core.Interfaces;
+using TimeLedger.Core.Interfaces.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 
 namespace TimeLedger.Core.Services;
 

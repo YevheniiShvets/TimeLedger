@@ -1,23 +1,20 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace TimeLedger.Core.DTOs;
+namespace TimeLedger.Core.DTOs.Users;
 
-public class UpdateAccountDto
+public class RegisterDto
 {
-    [Required]
-    [MaxLength(100)]
-    public string Name { get; set; } = string.Empty;
-
     [Required]
     [EmailAddress]
     [MaxLength(254)]
     public string Email { get; set; } = string.Empty;
-
+    [Required]
+    [MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
     [Required]
     [PasswordPropertyText]
     public string Password { get; set; } = string.Empty;
-
     [Required]
     [PasswordPropertyText]
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]

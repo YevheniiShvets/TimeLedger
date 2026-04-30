@@ -1,6 +1,12 @@
 ﻿using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Groups;
+using TimeLedger.Core.DTOs.Users;
 using TimeLedger.Core.Interfaces;
+using TimeLedger.Core.Interfaces.Groups;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Groups;
+using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Core.Services;
 
@@ -50,20 +56,6 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
         var group = GetAccessibleGroup(id, userId);
         EnsureOwner(group, userId);
         groupRepository.DeleteGroup(group.Id, userId);
-    }
-
-    public void AddMember(int groupId, AddMemberDto dto, int userId)
-    {
-        ValidateEmail(dto.Email);
-
-        var group = GetAccessibleGroup(groupId, userId);
-        EnsureOwner(group, userId);
-        var user = userRepository.GetByEmail(dto.Email.Trim()) ?? throw new InvalidOperationException("User not found");
-
-        if (user.Id == group.OwnerId || groupRepository.IsMember(groupId, user.Id))
-            throw new InvalidOperationException("User is already a member of this group");
-
-        groupRepository.AddGroupMember(groupId, user.Id);
     }
 
     public void RemoveMember(int groupId, int userId, int actorUserId)
@@ -120,15 +112,7 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
         if (name.Trim().Length > 100)
             throw new ArgumentException("Group name cannot exceed 100 characters.");
     }
-
-    private static void ValidateEmail(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email is required.");
-
-        if (email.Trim().Length > 254)
-            throw new ArgumentException("Email cannot exceed 254 characters.");
-    }
+    
 
     private static void EnsureOwner(Group group, int userId)
     {

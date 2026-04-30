@@ -1,0 +1,64 @@
+﻿@page
+@model TimeLedger.Pages.Inbox.Index
+
+@{
+    ViewData["Title"] = "Inbox";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Inbox</h1>
+        <p class="page-subtitle">View your group invitations and notifications.</p>
+    </div>
+</div>
+
+@if (!Model.InboxItems.Any())
+{
+    <div class="empty-state">
+        <p>No invitations or notifications.</p>
+    </div>
+}
+else
+{
+    <section class="date-group">
+        @foreach (var item in Model.InboxItems)
+        {
+            @if (item.Type == "GroupInvitation")
+            {
+                <div class="event-card">
+                    <div class="event-card-left">
+                        <span class="event-title">@item.ContextName</span>
+                        <div class="event-meta">
+                            <span>Invitation from @item.SentBy</span>
+                            <span class="event-date">Expires @item.ExpiresAt?.ToString("MMM d, yyyy")</span>
+                        </div>
+                    </div>
+                    <div class="event-card-actions">
+                        <form asp-page-handler="AcceptInvitation" asp-route-invitationId="@item.Id" method="post" style="display: inline;">
+                            <button type="submit" class="btn-action btn-accept">Accept</button>
+                        </form>
+                        <form asp-page-handler="DeclineInvitation" asp-route-invitationId="@item.Id" method="post" style="display: inline;">
+                            <button type="submit" class="btn-action btn-decline">Decline</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else if (item.Type == "GroupNotification")
+            {
+                <div class="event-card notification-card">
+                    <div class="event-card-left">
+                        <span class="event-title">@(item.NotificationSubType switch {
+                            "GroupDeleted" => $"{item.ContextName} has been deleted",
+                            "OwnershipTransferred" => $"You are now the owner of {item.ContextName}",
+                            "MemberRemoved" => $"You have been removed from {item.ContextName}",
+                            _ => item.ContextName
+                        })</span>
+                        <div class="event-meta">
+                            <span class="event-date">@item.CreatedAt.ToString("MMM d, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+}

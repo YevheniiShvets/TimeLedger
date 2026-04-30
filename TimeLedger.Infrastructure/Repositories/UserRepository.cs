@@ -2,7 +2,9 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using TimeLedger.Core.Interfaces;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Infrastructure.Repositories;
 

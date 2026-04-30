@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Groups;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
@@ -31,7 +32,7 @@ public class CreateModel(GroupService groupService) : PageModel
         try
         {
             var group = groupService.Create(Input, userId.Value);
-            return RedirectToPage("/Groups/Manage", new { id = group.Id });
+            return RedirectToPage("/Groups/Index", new { id = group.Id });
         }
         catch (InvalidOperationException ex)
         {

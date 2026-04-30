@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 
@@ -30,7 +32,7 @@ public class CreateModel : PageModel
         return Page();
     }
 
-    public  IActionResult OnPost()
+    public IActionResult OnPost()
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Groups;
+using TimeLedger.Core.Interfaces.Groups;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
 
-public class ManageModel(GroupService groupService) : PageModel
+public class ManageModel(GroupService groupService, IGroupInvitationService invitationService) : PageModel
 {
     [TempData]
     public string? StatusMessage { get; set; }
@@ -13,7 +15,7 @@ public class ManageModel(GroupService groupService) : PageModel
     
 
     [BindProperty]
-    public AddMemberDto AddMemberInput { get; set; } = new();
+    public CreateGroupInvitationDto AddMemberInput { get; set; } = new();
     public GroupInfoDto Group { get; private set; } = new();
     public bool IsOwner { get; private set; }
 
@@ -25,19 +27,25 @@ public class ManageModel(GroupService groupService) : PageModel
 
     
 
-    public IActionResult OnPostAddMember(int id, [FromForm(Name = "AddMemberInput.Email")] string email)
+    public IActionResult OnPostAddMember(int id, [FromForm(Name = "AddMemberInput.InviteeEmail")] string email)
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
+        
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ModelState.AddModelError(string.Empty, "Email is required.");
+            return LoadPage(id, userId.Value);
+        }
 
-        AddMemberInput.Email = email.Trim();
-        StatusMessage = $"Add member request received for {AddMemberInput.Email}.";
+        AddMemberInput.InviteeEmail = email.Trim();
+        StatusMessage = $"Add member request received for {AddMemberInput.InviteeEmail}.";
 
         try
         {
-            groupService.AddMember(id, AddMemberInput, userId.Value);
-            StatusMessage = "Member added.";
+            invitationService.Invite(id, AddMemberInput, userId.Value);
+            StatusMessage = "Invitation sent";
             return RedirectToPage(new { id });
         }
         catch (ArgumentException ex)
@@ -52,7 +60,7 @@ public class ManageModel(GroupService groupService) : PageModel
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Failed to add member: {ex.Message}");
+            ModelState.AddModelError(string.Empty, $"Failed to sent invitation: {ex.Message}");
             return LoadPage(id, userId.Value);
         }
     }
