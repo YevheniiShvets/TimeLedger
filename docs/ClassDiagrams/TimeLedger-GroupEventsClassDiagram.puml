@@ -1,0 +1,157 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Group Events Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Group Event Pages" as GroupEventPages
+  class "Group Event DTOs" as GroupEventDTOs
+}
+
+package "Service" #E8F5E9 {
+  interface IGroupEventService {
+	+ GetAllForUser(actorUserId: int): IEnumerable<GroupEventListItemDto>
+	+ Create(groupId: int, dto: CreateEventDto, actorUserId: int): (EventResponseDto, bool, IReadOnlyList<AccountInfoDto>)
+  }
+
+  class GroupEventService {
+	- eventRepository: IEventRepository
+	- groupRepository: IGroupRepository
+	- userRepository: IUserRepository
+  }
+}
+
+package "Core Model" #EDE7F6 {
+  class Event {
+	+ Id: int
+	+ OwnerType: EventOwnerType
+	+ OwnerId: int
+	+ Title: string
+	+ Description: string?
+	+ Location: string?
+	+ AllowOverlap: bool
+	+ EventType: EventType
+	+ StartTime: DateTime?
+	+ EndTime: DateTime?
+	+ DueAt: DateTime?
+	+ RecurrenceFrequency: RecurrenceFrequency?
+	+ RecurrenceInterval: int?
+	+ RecurrenceValue: string?
+	+ RecurrenceEndTime: DateTime?
+	+ RecurrenceMaxOccurrences: int?
+  }
+
+  class Group {
+	+ Id: int
+	+ OwnerId: int
+	+ Name: string
+  }
+
+  class User {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+
+  enum EventOwnerType {
+	User
+	Group
+  }
+
+  enum EventType {
+	OneTime
+	Recurrence
+	Deadline
+  }
+
+  enum RecurrenceFrequency {
+	Daily
+	Weekly
+	Monthly
+	Yearly
+  }
+}
+
+package "DTOs" #F3E5F5 {
+  class CreateEventDto {
+	+ Title: string
+	+ Description: string?
+	+ Location: string?
+	+ EventType: EventType
+	+ StartTime: DateTime?
+	+ EndTime: DateTime?
+	+ DueAt: DateTime?
+	+ AllowOverlap: bool
+	+ RecurrenceRule: RecurrenceRuleDto?
+  }
+
+  class EventResponseDto {
+	+ Id: int
+	+ Title: string
+	+ Description: string?
+	+ Location: string?
+	+ StartTime: DateTime?
+	+ EndTime: DateTime?
+	+ AllowOverlap: bool
+	+ EventType: EventType
+	+ DueAt: DateTime?
+	+ RecurrenceFrequency: RecurrenceFrequency?
+	+ RecurrenceInterval: int?
+	+ RecurrenceEndTime: DateTime?
+	+ RecurrenceMaxOccurrences: int?
+	+ RecurrenceInfo: string?
+  }
+
+  class GroupEventListItemDto {
+	+ GroupId: int
+	+ GroupName: string
+	+ Event: EventResponseDto
+  }
+
+  class AccountInfoDto {
+	+ Id: int
+	+ Email: string
+	+ Name: string
+	+ Description: string
+	+ CreatedAt: DateTime
+  }
+
+  class RecurrenceRuleDto {
+	+ RecurrenceFrequency: RecurrenceFrequency
+	+ RecurrenceInterval: int
+	+ RecurrenceValue: string?
+	+ RecurrenceEndTime: DateTime?
+	+ RecurrenceMaxOccurrences: int?
+  }
+}
+
+package "Repository" #FFF3E0 {
+  interface IEventRepository
+  interface IGroupRepository
+  interface IUserRepository
+}
+
+GroupEventPages --> IGroupEventService
+GroupEventPages --> GroupEventDTOs
+GroupEventDTOs --> GroupEventListItemDto
+IGroupEventService <|.. GroupEventService
+GroupEventService ..> IEventRepository
+GroupEventService ..> IGroupRepository
+GroupEventService ..> IUserRepository
+GroupEventService --> EventResponseDto
+GroupEventService --> AccountInfoDto
+GroupEventListItemDto --> EventResponseDto : contains
+CreateEventDto --> RecurrenceRuleDto : contains
+Event "1" ..> "1" EventType : uses
+Event "1" ..> "1" EventOwnerType : uses
+Event "1" ..> "0..1" RecurrenceFrequency : uses
+
+@enduml

@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
 using TimeLedger.Core.DTOs.Users;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class RegisterModel(UserService userService) : PageModel
+public class RegisterModel(IUserService userService) : PageModel
 {
     [BindProperty]
     public RegisterDto Input { get; set; } = new();
@@ -48,4 +49,3 @@ public class RegisterModel(UserService userService) : PageModel
         }
     }
 }
-

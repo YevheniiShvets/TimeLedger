@@ -1,4 +1,6 @@
-﻿namespace TimeLedger.Core.DTOs.Events;
+﻿using TimeLedger.Core.Models.Events;
+
+namespace TimeLedger.Core.DTOs.Events;
 
 public class EventResponseDto
 {
@@ -6,16 +8,26 @@ public class EventResponseDto
     public string Title { get; init; } = string.Empty;
     public string? Description { get; init; }
     public string? Location { get; init; }
-    public DateTime StartTime { get; init; }
-    public DateTime EndTime { get; init; }
+    public DateTime? StartTime { get; init; }
+    public DateTime? EndTime { get; init; }
     public bool AllowOverlap { get; init; }
+    public EventType EventType { get; init; }
+    public EventOwnerType OwnerType { get; init; }
+    public int OwnerId { get; init; }
+    public DateTime? DueAt { get; init; }
+    public RecurrenceFrequency? RecurrenceFrequency { get; init; }
+    public int? RecurrenceInterval { get; init; }
+    public DateTime? RecurrenceEndTime { get; init; }
+    public int? RecurrenceMaxOccurrences { get; init; }
+    public string? RecurrenceInfo { get; init; }
     
-    public string Duration 
+    public string? Duration 
     {
-        // 1d 0h 1m, 1d 1h 0m, 1d 0h 0m, 0d 1h 1m, 0d 1h 0m, 0d 0h 1m
         get
         {
-            var duration = EndTime - StartTime;
+            if (StartTime is null || EndTime is null)
+                return null;
+            var duration = EndTime.Value - StartTime.Value;
             if (duration.TotalDays >= 1)
             {
                 return duration.Hours == 0 ? $"{(int)duration.TotalDays}d" : $"{(int)duration.TotalDays}d {duration.Hours}h"; // show days and hours

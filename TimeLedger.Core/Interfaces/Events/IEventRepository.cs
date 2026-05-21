@@ -10,4 +10,6 @@ public interface IEventRepository
     Event Update(Event e);
     void Delete(Event e);
     bool HasOverlap(DateTime startTime, DateTime endTime, int? excludeId, EventOwnerType ownerType, int ownerId);
+    IEnumerable<int> GetOverlappingOwnerIds(DateTime startTime, DateTime endTime, int? excludeId, EventOwnerType ownerType, IEnumerable<int> ownerIds);
+    IEnumerable<Event> GetByType(EventType type, EventOwnerType ownerType, int ownerId);
 }

@@ -1,0 +1,56 @@
+﻿@page "{id:int}"
+@model TimeLedger.Pages.Events.DetailsModel
+@using TimeLedger.Core.Models.Events
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="form-container">
+    <a asp-page="/Events/Index" class="form-back">← Back to Calendar</a>
+    <h1 class="form-title">Event Details</h1>
+    <p class="form-subtitle">Full details for this activity</p>
+
+    <div class="delete-card">
+        <p><strong>@Model.Event.Title</strong></p>
+        <p>Type: @Model.Event.EventType</p>
+
+        @if (Model.Event.EventType == EventType.Deadline)
+        {
+            <p>Due at: @(Model.Event.DueAt.HasValue ? Model.Event.DueAt.Value.ToString("dd/MM/yyyy HH:mm") : "Time TBD")</p>
+        }
+        else
+        {
+            <p>
+                @(Model.Event.StartTime.HasValue
+                    ? Model.Event.StartTime.Value.ToString("dd/MM/yyyy HH:mm")
+                    : "Time TBD")
+                -
+                @(Model.Event.EndTime.HasValue
+                    ? Model.Event.EndTime.Value.ToString("dd/MM/yyyy HH:mm")
+                    : "Time TBD")
+            </p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Event.RecurrenceInfo))
+        {
+            <p>Recurrence: @Model.Event.RecurrenceInfo</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Event.Location))
+        {
+            <p>Location: @Model.Event.Location</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Event.Description))
+        {
+            <p>@Model.Event.Description</p>
+        }
+    </div>
+
+    <div class="btn-row">
+        <a asp-page="/Events/Edit" asp-route-id="@Model.Event.Id" class="btn-primary">Edit</a>
+        <a asp-page="/Events/Delete" asp-route-id="@Model.Event.Id" class="btn-danger">Delete</a>
+        <a asp-page="/Events/Index" class="btn-secondary">Back</a>
+    </div>
+</div>
+

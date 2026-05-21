@@ -1,16 +1,13 @@
-﻿using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Groups;
+﻿using TimeLedger.Core.DTOs.Groups;
 using TimeLedger.Core.DTOs.Users;
-using TimeLedger.Core.Interfaces;
 using TimeLedger.Core.Interfaces.Groups;
 using TimeLedger.Core.Interfaces.Users;
-using TimeLedger.Core.Models;
 using TimeLedger.Core.Models.Groups;
 using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Core.Services;
 
-public class GroupService(IGroupRepository groupRepository, IUserRepository userRepository)
+public class GroupService(IGroupRepository groupRepository, IUserRepository userRepository) : IGroupService
 {
     public IEnumerable<GroupInfoDto> GetAll(int actorUserId)
         => groupRepository.GetAllGroups(actorUserId).Select(Map);
@@ -25,7 +22,6 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
             .Select(MapUser).ToList();
         return Map(group, members);
     }
-
     public GroupInfoDto Create(CreateGroupDto dto, int userId)
     {
         ValidateForm(dto.Name);
@@ -88,7 +84,7 @@ public class GroupService(IGroupRepository groupRepository, IUserRepository user
     }
 
 
-// Private helpers
+    // Private helpers
     
     
     

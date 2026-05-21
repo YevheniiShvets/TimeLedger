@@ -14,6 +14,7 @@ package "Presentation" as Presentation #E3F2FD {
 }
 
 package "Service" as Service #E8F5E9 {
+  interface ServiceInterface <<Interface>>
   class ServiceClass <<Service>>
 }
 
@@ -30,12 +31,13 @@ package "Repository / Data Access" as Repository #FFF3E0 {
   class RepositoryClass <<Repository>>
 }
 
-Presentation -down-> Service
+Presentation -down-> ServiceInterface
 Presentation ..> DTOs
-Service ..> DTOs
-Service -down..> Repository
+ServiceInterface <|.. ServiceClass
+ServiceClass ..> DTOs
+ServiceClass -down..> RepositoryInterface
 RepositoryInterface <|.. RepositoryClass
-Service -down-> CoreModel
+ServiceClass -down-> CoreModel
 Repository -down-> CoreModel
 
 ' Layout hints to keep lanes separated and reduce arrow crossings

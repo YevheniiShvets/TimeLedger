@@ -3,6 +3,7 @@ using TimeLedger.Core.DTOs.Inbox;
 using TimeLedger.Core.Interfaces.Groups;
 using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Models.Groups;
+using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Core.Services;
 
@@ -18,16 +19,8 @@ public class GroupInvitationService(IGroupInvitationRepository invitationRepo, I
         var actorUser = userRepo.GetById(actorUserId);
         var group = groupRepo.GetGroupById(groupId, actorUserId);
         
-        if (user == null)            
-            throw new InvalidOperationException($"User with email {dto.InviteeEmail} not found.");
-        if (actorUser == null)       
-            throw new InvalidOperationException($"Actor user with ID {actorUserId} not found.");
-        if (group == null)           
-            throw new InvalidOperationException($"Group with ID {groupId} not found or access denied.");
-        if (user.Id == actorUserId) 
-            throw new InvalidOperationException("Users cannot invite themselves to a group.");
-        if (groupRepo.IsMember(groupId, user.Id)) 
-            throw new InvalidOperationException($"User {user.Id} is already a member of group {groupId}.");
+        ValidateUser(dto, user, actorUser, group);
+        
         var userInvitations = invitationRepo.GetPendingInvitationsForUser(user.Id);
         if (userInvitations.Any(inv => inv.GroupId == groupId))
             throw new InvalidOperationException($"User {user.Id} already has a pending invitation for group {groupId}.");
@@ -105,4 +98,16 @@ public class GroupInvitationService(IGroupInvitationRepository invitationRepo, I
         CreatedAt = invitation.CreatedAt,
         ExpiresAt = invitation.ExpiresAt
     };
+
+    private static void ValidateUser(CreateGroupInvitationDto dto, User? user, User? actorUser, Group group)
+    {
+        if (user == null)            
+            throw new InvalidOperationException($"User with email {dto.InviteeEmail} not found.");
+        if (actorUser == null)       
+            throw new InvalidOperationException("Actor user not found.");
+        if (group == null)           
+            throw new InvalidOperationException("Group not found or access denied.");
+        if (user.Id == actorUser.Id)
+            throw new InvalidOperationException("Users cannot invite themselves to a group.");
+    }
 }

@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
 using TimeLedger.Core.DTOs.Users;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class LoginModel(UserService userService) : PageModel
+public class LoginModel(IUserService userService) : PageModel
 {
     [BindProperty]
     public LoginDto Input { get; set; } = new();
@@ -43,4 +44,3 @@ public class LoginModel(UserService userService) : PageModel
         }
     }
 }
-

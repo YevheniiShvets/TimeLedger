@@ -7,7 +7,7 @@ using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
 
-public class ManageModel(GroupService groupService, IGroupInvitationService invitationService) : PageModel
+public class ManageModel(IGroupService groupService, IGroupInvitationService invitationService) : PageModel
 {
     [TempData]
     public string? StatusMessage { get; set; }

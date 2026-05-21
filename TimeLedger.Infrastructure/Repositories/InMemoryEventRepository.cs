@@ -52,4 +52,14 @@ public class InMemoryEventRepository : IEventRepository
             && e.EndTime > startTime);
         return (result);
     }
+
+    public IEnumerable<int> GetOverlappingOwnerIds(DateTime startTime, DateTime endTime, int? excludeId, EventOwnerType ownerType, IEnumerable<int> ownerIds)
+    {
+        throw new NotImplementedException("This method is not implemented yet.");
+    }
+
+    public IEnumerable<Event> GetByType(EventType type, EventOwnerType ownerType, int ownerId)
+    {
+        throw new NotImplementedException();
+    }
 }

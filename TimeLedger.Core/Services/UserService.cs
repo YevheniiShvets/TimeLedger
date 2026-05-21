@@ -7,7 +7,7 @@ using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Core.Services;
 
-public class UserService(IUserRepository userRepository)
+public class UserService(IUserRepository userRepository) : IUserService
 {
     public AccountInfoDto Register(RegisterDto dto)
     {

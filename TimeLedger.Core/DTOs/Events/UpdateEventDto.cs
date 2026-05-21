@@ -14,11 +14,17 @@ public class UpdateEventDto
     [MaxLength(300)]
     public string? Location { get; set; }
 
-    [Required]
-    public DateTime StartTime { get; set; }
+    public TimeLedger.Core.Models.Events.EventType EventType { get; set; }
 
     [Required]
-    public DateTime EndTime { get; set; }
+    public DateTime? StartTime { get; set; }
+
+    [Required]
+    public DateTime? EndTime { get; set; }
+
+    public DateTime? DueAt { get; set; }
 
     public bool AllowOverlap { get; set; } = false;
+
+    public RecurrenceRuleDto? RecurrenceRule { get; set; }
 }

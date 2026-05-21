@@ -10,13 +10,12 @@ hide empty members
 title TimeLedger - Account Layered Class Diagram
 
 package "Presentation" #E3F2FD {
-  class "Account Pages" as AccountPages <<Razor Pages>>
-  class "Account DTOs" as AccountDTOs <<DTO>>
+  class "Account Pages" as AccountPages 
+  class "Account DTOs" as AccountDTOs 
 }
 
 package "Service" #E8F5E9 {
-  class UserService <<Service>> {
-	- userRepository: IUserRepository
+  interface IUserService {
 	+ Register(dto: RegisterDto): AccountInfoDto
 	+ Login(dto: LoginDto): AccountInfoDto
 	+ GetById(id: int): AccountInfoDto
@@ -24,23 +23,37 @@ package "Service" #E8F5E9 {
 	+ Delete(id: int): void
   }
 
-  class User <<Model>> {
+  class UserService {
+	- userRepository: IUserRepository
+  }
+
+  class AuthSession {
+	+ {static} UserIdKey: string
+	+ {static} UserEmailKey: string
+	+ {static} UserNameKey: string
+  }
+}
+package "Core Model" #EDE7F6 {
+  class User {
 	+ Id: int
 	+ Name: string
 	+ Email: string
 	+ PasswordHash: string
 	+ CreatedAt: DateTime
   }
-
-  class AuthSession <<Static>> {
-	+ UserIdKey: string
-	+ UserEmailKey: string
-	+ UserNameKey: string
-  }
 }
+
+package "DTOs" #F3E5F5 {
+  class RegisterDto 
+  class LoginDto
+  class UpdateAccountDto
+  class AccountInfoDto
+}
+
+
 
 package "Repository" #FFF3E0 {
-  interface IUserRepository <<Interface>> {
+  interface IUserRepository  {
 	+ GetById(id: int): User?
 	+ GetByEmail(email: string): User?
 	+ Add(user: User): User
@@ -49,21 +62,17 @@ package "Repository" #FFF3E0 {
 	+ Exists(email: string): bool
   }
 
-  class UserRepository <<Repository>> {
+  class UserRepository  {
 	- _connectionString: string
-	+ GetById(id: int): User?
-	+ GetByEmail(email: string): User?
-	+ Add(user: User): User
-	+ Update(user: User): User
-	+ Delete(user: User): void
-	+ Exists(email: string): bool
   }
 }
 
-AccountPages --> UserService
+AccountPages --> IUserService
 AccountPages ..> AuthSession
 AccountPages --> AccountDTOs
-UserService --> AccountDTOs
+AccountDTOs --> DTOs
+IUserService <|.. UserService
+UserService --> AccountInfoDto
 UserService --> User
 UserService ..> IUserRepository
 IUserRepository <|.. UserRepository

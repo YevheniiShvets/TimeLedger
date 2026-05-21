@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TimeLedger.Core.Models.Events;
 
 namespace TimeLedger.Core.DTOs.Events;
 
@@ -14,11 +15,17 @@ public class CreateEventDto
     [MaxLength(300)]
     public string? Location { get; set; }
     
-    [Required]
-    public DateTime StartTime { get; set; }
+    public EventType EventType { get; set; }
     
     [Required]
-    public DateTime EndTime { get; set; }
+    public DateTime? StartTime { get; set; }
     
-    public bool AllowOverlap { get; set; } = false;
+    [Required]
+    public DateTime? EndTime { get; set; }
+    
+    public DateTime? DueAt { get; set; }
+    
+    public bool AllowOverlap { get; set; }
+    
+    public RecurrenceRuleDto? RecurrenceRule { get; set; }
 }

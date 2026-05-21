@@ -1,0 +1,116 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Inbox / Group Invitation Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Inbox Page" as InboxPage
+  class "Inbox DTOs" as InboxDTOs
+}
+
+package "Service" #E8F5E9 {
+  interface IGroupInvitationService {
+	+ Invite(groupId: int, dto: CreateGroupInvitationDto, userId: int): InboxItemDto
+	+ GetPendingInboxForUser(userId: int): IEnumerable<InboxItemDto>
+	+ AcceptInvitation(invitationId: int, userId: int): void
+	+ DeclineInvitation(invitationId: int, userId: int): void
+	+ GetInvitation(invitationId: int, userId: int): InboxItemDto
+	+ DeleteInvitation(invitationId: int, userId: int): void
+  }
+
+  class GroupInvitationService {
+	- invitationRepo: IGroupInvitationRepository
+	- userRepo: IUserRepository
+	- groupRepo: IGroupRepository
+
+  }
+}
+
+package "Core Model" #EDE7F6 {
+  class GroupInvitation {
+	+ Id: int
+	+ GroupId: int
+	+ InvitedUserId: int
+	+ InvitedByUserId: int
+	+ CreatedAt: DateTime
+	+ ExpiresAt: DateTime?
+  }
+
+  class User {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+
+  class Group {
+	+ Id: int
+	+ OwnerId: int
+	+ Name: string
+  }
+}
+
+package "DTOs" #F3E5F5 {
+  class InboxItemDto {
+	+ Id: int
+	+ Type: string
+	+ ContextId: int
+	+ ContextName: string?
+	+ SentBy: string
+	+ NotificationSubType: string?
+	+ CreatedAt: DateTime
+	+ ExpiresAt: DateTime?
+  }
+
+  class CreateGroupInvitationDto {
+	+ InviteeEmail: string
+  }
+}
+
+package "Repository" #FFF3E0 {
+  
+
+  interface IUserRepository
+  interface IGroupRepository
+    
+  interface IGroupInvitationRepository {
+  	+ Create(invitation: GroupInvitation): GroupInvitation
+  	+ GetById(id: int): GroupInvitation?
+  	+ GetPendingInvitationsForUser(userId: int): IEnumerable<GroupInvitation>
+  	+ GetByGroupId(groupId: int): IEnumerable<GroupInvitation>
+  	+ Delete(invitationId: int): void
+    }  
+  
+  class GroupInvitationRepository {
+	- _connectionString: string
+
+  }
+}
+
+InboxPage --> IGroupInvitationService
+InboxPage --> DTOs
+InboxDTOs --> DTOs
+IGroupInvitationService <|.. GroupInvitationService
+IGroupInvitationRepository <|.. GroupInvitationRepository
+GroupInvitationService ..> IGroupInvitationRepository
+GroupInvitationService ..> IUserRepository
+GroupInvitationService ..> IGroupRepository
+GroupInvitationService --> DTOs
+GroupInvitationService --> GroupInvitation
+GroupInvitationRepository --> GroupInvitation
+
+User "1" <-- "0..*" GroupInvitation
+User "1" <-- "0..*" GroupInvitation
+Group "1" <-- "0..*" GroupInvitation
+GroupInvitation -->  DTOs
+
+
+
+@enduml

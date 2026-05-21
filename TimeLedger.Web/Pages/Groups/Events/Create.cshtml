@@ -1,16 +1,16 @@
-﻿@page
-@model TimeLedger.Pages.Events.CreateModel
+﻿@page "{groupId:int}"
+@model TimeLedger.Pages.Groups.Events.CreateModel
 @using TimeLedger.Core.Models.Events
 @{
-    ViewData["Title"] = "Create Event";
+    ViewData["Title"] = "Create Group Event";
 }
 
 <div class="form-container">
-    <a href="" class="form-back">← Back to Calendar</a>
-    <h1 class="form-title">Add Activity</h1>
-    <p class="form-subtitle">Create a new activity in your schedule</p>
+    <a asp-page="/Groups/Events/Index" class="form-back">← Back to Group Events</a>
+    <h1 class="form-title">Add Group Activity</h1>
+    <p class="form-subtitle">Create a new event for @Model.GroupName</p>
 
-    <form method="post"> 
+    <form method="post">
         <div class="form-group">
             <label asp-for="Input.Title">Title <span class="required">*</span></label>
             <input asp-for="Input.Title" placeholder="e.g., Team Meeting, Study Session" />
@@ -78,7 +78,11 @@
         @if (Model.ShowOverlapWarning)
         {
             <div class="overlap-warning">
-                <span>⚠ This event overlaps with an existing event.</span>
+                <span>⚠ This event overlaps with existing group or member events.</span>
+                @if (Model.OverlappingUsers.Any())
+                {
+                    <div class="event-meta">Conflicts: @string.Join(", ", Model.OverlappingUsers)</div>
+                }
                 <label>
                     <input asp-for="Input.AllowOverlap" type="checkbox" />
                     Proceed anyway
@@ -89,8 +93,8 @@
         <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
         <div class="btn-row">
-            <button type="submit" class="btn-primary">Add Activity</button>
-            <a href="" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Add Group Event</button>
+            <a asp-page="/Groups/Events/Index" class="btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
@@ -110,12 +114,10 @@
             const isRecurrence = selected === @((int)EventType.Recurrence);
             const isDeadline = selected === @((int)EventType.Deadline);
 
-            // Toggle visibility
             recurrenceSection.style.display = isRecurrence ? 'block' : 'none';
             deadlineSection.style.display = isDeadline ? 'block' : 'none';
             timeRangeSection.style.display = isDeadline ? 'none' : 'flex';
 
-            // Toggle disabled state so hidden fields aren't submitted (avoids server validation errors)
             const recurrenceInputs = recurrenceSection.querySelectorAll('input, select');
             recurrenceInputs.forEach(input => {
                 input.disabled = !isRecurrence;
@@ -140,3 +142,4 @@
         toggleSections();
     });
 </script>
+

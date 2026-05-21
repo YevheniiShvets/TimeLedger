@@ -1,9 +1,5 @@
 ﻿# TimeLedger Entity Relationship Diagram (ERD)
 
-## Alignment with Learning Outcomes
-
-This document supports **LO2 (Designing)**: It provides a visual representation of the database schema and entity relationships, demonstrating how validated user specifications are translated into a technical database design with consideration for data integrity and maintainability.
-
 ## 1. ER Diagram
 
 ### 1.1 Visual Representation

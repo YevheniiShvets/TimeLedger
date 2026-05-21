@@ -8,7 +8,10 @@
         <h1>Groups</h1>
         <p class="page-subtitle">Manage shared calendars and members.</p>
     </div>
-    <a class="btn-add" asp-page="/Groups/Create">+ New Group</a>
+    <div class="event-card-actions">
+        <a class="btn-add" asp-page="/Groups/Create">+ New Group</a>
+        <a class="btn-secondary" asp-page="/Groups/Events/Index">Group Events</a>
+    </div>
 </div>
 @if (!Model.Groups.Any())
 {
@@ -30,6 +33,11 @@ else
                     </div>
                 </div>
                 <div class="event-card-actions">
+                    <a asp-page="/Groups/Events/Index">Events</a>
+                    @if (group.OwnerId == Model.CurrentUserId)
+                    {
+                        <a asp-page="/Groups/Events/Create" asp-route-groupId="@group.Id">Add Event</a>
+                    }
                     <a asp-page="/Groups/ManageMembers" asp-route-id="@group.Id">@(group.OwnerId == Model.CurrentUserId ? "Manage Members" : "View Members")</a>
                     @if (group.OwnerId == Model.CurrentUserId)
                     {
