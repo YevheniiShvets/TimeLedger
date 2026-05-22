@@ -1,0 +1,66 @@
+@startuml TimeLedger_Iteration2_UseCases
+
+title TimeLedger — Use Case Diagram\nIteration 2: Authentication & Group Collaboration
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #4A90D9
+  ArrowColor #4A90D9
+  ActorBorderColor #2C5F8A
+  ActorBackgroundColor #D6E8F7
+}
+
+actor Guest
+actor User
+actor "Group Member" as Member
+actor "Group Owner" as Owner
+
+
+User <|-- Owner
+User <|-- Member
+
+rectangle "TimeLedger — Iteration 2" {
+
+  package "Account Management" {
+    usecase "UC-8\nRegister an Account" as UC8
+    usecase "UC-9\nLog In" as UC9
+    usecase "UC-10\nView Signed-In Account\nin Sidebar" as UC10
+    usecase "UC-11\nLog Out" as UC11
+    usecase "UC-12\nView and Edit\nAccount Information" as UC12
+  }
+
+  package "Event Ownership" {
+    usecase "UC-13\nView Own\nEvents Only" as UC13
+  }
+
+  package "Group Management" {
+    usecase "UC-14\nCreate a Group" as UC14
+    usecase "UC-15\nAdd and Remove\nGroup Members" as UC15
+    usecase "UC-16\nView Groups" as UC16
+  }
+
+
+
+}
+
+Guest --> UC8
+Guest --> UC9
+
+
+UC9 .> UC10 : <<include>>
+
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC16
+
+Owner --> UC14
+Owner --> UC15
+
+
+
+@enduml
