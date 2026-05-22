@@ -1,15 +1,15 @@
-﻿# TimeLedger Analysis — Iteration 2
+# TimeLedger Analysis — Iteration 3
 
 | Project Name: | TimeLedger      |
 |---------------|-----------------|
-| Date:         | 2026-04-17      |
+| Date:         | 2026-05-22      |
 | Author:       | Yevhenii Shvets |
-| Version:      | 2.0             |
-| Iteration:    | 2               |
+| Version:      | 3.0             |
+| Iteration:    | 3               |
 
 ## 1. Purpose
 
-This document captures the functional requirements and user specifications for the `TimeLedger` solution, aligned with iteration 2 implementation. It provides requirements and separates delivered features from planned scope for future iterations.
+This document captures the functional requirements and user specifications for the `TimeLedger` solution, aligned with iteration 3 implementation. It provides requirements and separates delivered features from planned scope for future iterations.
 
 ## 2. Product overview
 
@@ -56,17 +56,18 @@ The solution currently focuses on:
 - Add and remove group members by email
 - View groups where user is owner or member
 - Only group owners can modify group details and membership
+- Invite users to groups and manage invitations from the inbox
+- Create and view group events from group pages
+- Group event overlap checks include existing group events and member personal events
+- Event types support three modes: `OneTime`, `Recurrence`, and `Deadline`
 - Render forms and event cards with shared CSS files
 - per-user event filtering and authorization in service layer
 
-### 3.4 Planned items (Iteration 3)
+### 3.4 Planned items (Iteration 4+)
 
-- Event creation by groups (events with `OwnerType = Group`)
-- Group invitation workflow (invite, accept, decline statuses)
-- Persistence of invitation records and membership history
-- Calendar view with day-based event grouping
-- Advanced permission models for group events
-- Recurring events and scheduling features
+- Calendar view improvements with richer day/week aggregation
+- Advanced notification types and inbox filtering
+- Expanded permission models for group-level scheduling workflows
 
 ## 4. Problem statement
 
@@ -81,7 +82,7 @@ The live implementation now includes account management, authenticated event sch
 | Developer | Builder and Maintainer | Clean architecture, testable code, clear requirements                      |
 | Academic Assessor | Evaluator | Demonstrated iterative process, clean layered design, proper documentation |
 
-## 6. Functional requirements for iteration 2
+## 6. Functional requirements for iteration 3
 
 ### Implemented in the current solution
 
@@ -96,15 +97,17 @@ The live implementation now includes account management, authenticated event sch
 | FR-16 | Restrict group access to owners and members | Implemented |
 | FR-17 | Allow users to log out and clear session | Implemented |
 | FR-18 | Allow users to view and edit account information | Implemented |
+| FR-19 | Allow group owners to invite users to groups by email | Implemented |
+| FR-20 | Show group invitations in inbox and allow accept/decline actions | Implemented |
+| FR-21 | Support event types: `OneTime`, `Recurrence`, and `Deadline` | Implemented |
+| FR-22 | Validate group event overlaps against group schedule and member events | Implemented |
 
-### Planned for iteration 3 or later
+### Planned for iteration 4 or later
 
 | ID | Requirement | Status |
 |---|---|---|
-| FR-20 | Allow events to be created by groups | Planned |
-| FR-21 | Implement group invitation workflow (invite, accept, decline) | Planned |
-| FR-22 | Store invitation records and membership history | Planned |
-| FR-23 | Display invitations in user interface | Planned |
+| FR-23 | Add advanced inbox filtering and notification categorization | Planned |
+| FR-24 | Extend calendar projections for long-range planning views | Planned |
 
 ## 7. Non-functional requirements
 
@@ -114,7 +117,7 @@ The live implementation now includes account management, authenticated event sch
 
 ## 8. Use Case Summary
 
-Full use cases are documented in `UseCasesIT2.md`, but the following table summarizes the main user interactions implemented in iteration 2.
+Full use cases are documented in `UseCasesIT2.md`. The following table summarizes implemented interactions from iteration 2 and new iteration 3 use cases.
 
 | Use Case Number | Use Case Name | Short Description |
 |-----------------|---------------|-------------------|
@@ -127,6 +130,10 @@ Full use cases are documented in `UseCasesIT2.md`, but the following table summa
 | UC-16 | Create Group | An authenticated user creates a new group and becomes its owner. |
 | UC-17 | View Accessible Groups | A user views groups they own or belong to. |
 | UC-18 | Manage Group Members | A group owner adds/removes members and maintains group details. |
+| UC-19 | Invite User to Group | A group owner sends an invitation to a user by email. |
+| UC-20 | Manage Inbox Invitations | An invited user reviews inbox invitations and accepts or declines them. |
+| UC-21 | Create Group Event by Type | A group owner creates group events using `OneTime`, `Recurrence`, or `Deadline` type. |
+| UC-22 | Resolve Group Event Overlap | A group owner receives overlap warnings (including member conflicts) and can confirm overlap explicitly. |
 
 ## 9. Data Transfer Objects (DTOs)
 
@@ -141,6 +148,5 @@ DTOs define the data contracts between the Presentation layer and the core servi
 
 ## 10. Summary
 
-Iteration 2 has evolved the application from a simple event planner into a multi-user scheduling platform with account management and event ownership.
-The most significant improvements are the introduction of authorization checks, event and group ownership models, and SOLID layered architecture.
-
+Iteration 3 has evolved the application into a richer collaboration platform with invitation inbox flows, multi-type events, and group-event conflict awareness.
+The most significant improvements in this iteration are inbox-based group invitations, support for `OneTime`/`Recurrence`/`Deadline` event types, and overlap validation against both group and member schedules.
