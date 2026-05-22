@@ -24,8 +24,8 @@ package "Service" #E8F5E9 {
   }
 
   interface IEventOccurrenceService {
-    + GetOccurrencesInRange(ownerType: EventOwnerType, ownerId: int, rangeStart: DateTime, rangeEnd: DateTime): IEnumerable<EventOccurrenceDto>
-    + GetOccurrencesForWeek(ownerType: EventOwnerType, ownerId: int, weekStartDate: DateTime): IEnumerable<EventOccurrenceDto>
+    + GetOccurrencesInRange(EventOwnerType ownerType, int ownerId, DateTime rangeStart, DateTime rangeEnd);: IEnumerable<EventResponseDto>
+    + GetOccurrencesForWeek(ownerType: EventOwnerType, ownerId: int, weekStartDate: DateTime): IEnumerable<EventResponseDto>
   }
 
   interface IRecurrenceService {
@@ -45,17 +45,14 @@ package "Service" #E8F5E9 {
 package "Core Model" #EDE7F6 {
   class Event {
     + Id: int
-    + OwnerType: EventOwnerType
     + OwnerId: int
     + Title: string
     + Description: string?
     + Location: string?
     + AllowOverlap: bool
-    + EventType: EventType
     + StartTime: DateTime?
     + EndTime: DateTime?
     + DueAt: DateTime?
-    + RecurrenceFrequency: RecurrenceFrequency?
     + RecurrenceInterval: int?
     + RecurrenceValue: string?
     + RecurrenceEndTime: DateTime?
@@ -74,6 +71,12 @@ package "Core Model" #EDE7F6 {
   }
 
   enum RecurrenceFrequency
+    {
+        Daily
+        Weekly
+        Monthly
+        Yearly
+    }
 }
 
 package "Repository" #FFF3E0 {
@@ -85,25 +88,14 @@ package "Repository" #FFF3E0 {
     + Delete(e: Event): void
     + HasOverlap(startTime: DateTime, endTime: DateTime, excludeId: int?, ownerType: EventOwnerType, ownerId: int): bool
     + GetOverlappingOwnerIds(startTime: DateTime, endTime: DateTime, excludeId: int?, ownerType: EventOwnerType, ownerIds: IEnumerable<int>): IEnumerable<int>
+    + GetByType(EventType type, EventOwnerType ownerType, int ownerId) : IEnumerable<Event>
   }
   class EventRepository {
     - _connectionString: string
-    + GetAll(ownerType: EventOwnerType, ownerId: int): IEnumerable<Event>
-    + GetById(id: int, ownerType: EventOwnerType, ownerId: int): Event?
-    + Add(e: Event): Event
-    + Update(e: Event): Event
-    + Delete(e: Event): void
-    + HasOverlap(startTime: DateTime?, endTime: DateTime?, excludeId: int?, ownerType: EventOwnerType, ownerId: int): bool
   }
   class InMemoryEventRepository {
     - _events: List<Event>
     - _nextId: int
-    + GetAll(ownerType: EventOwnerType, ownerId: int): IEnumerable<Event>
-    + GetById(id: int, ownerType: EventOwnerType, ownerId: int): Event?
-    + Add(e: Event): Event
-    + Update(e: Event): Event
-    + Delete(e: Event): void
-    + HasOverlap(startTime: DateTime?, endTime: DateTime?, excludeId: int?, ownerType: EventOwnerType, ownerId: int): bool
   }
 }
 
@@ -123,15 +115,9 @@ IEventRepository <|.. EventRepository
 IEventRepository <|.. InMemoryEventRepository
 EventRepository --> Event
 InMemoryEventRepository --> Event
-Event "1" ..> "1" EventOwnerType : uses
-Event "1" ..> "1" EventType : uses
-Event "1" ..> "0..1" RecurrenceFrequency : uses
+Event "1" ..> "1" EventOwnerType
+Event "1" ..> "1" EventType
+Event "1" ..> "0..1" RecurrenceFrequency
 
-note right of Event
-  One event has exactly one EventOwnerType and one EventType value.
-  RecurrenceFrequency is optional and only meaningful when EventType = Recurrence.
-  OwnerType and OwnerId are model attributes used to resolve polymorphic ownership in service/repository logic.
-  Recurrence fields are only meaningful when EventType = Recurrence.
-end note
 
 @enduml

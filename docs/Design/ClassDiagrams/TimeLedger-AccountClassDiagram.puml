@@ -72,7 +72,7 @@ AccountPages ..> AuthSession
 AccountPages --> AccountDTOs
 AccountDTOs --> DTOs
 IUserService <|.. UserService
-UserService --> AccountInfoDto
+UserService --> DTOs
 UserService --> User
 UserService ..> IUserRepository
 IUserRepository <|.. UserRepository

@@ -95,7 +95,7 @@ package "Repository" #FFF3E0 {
 }
 
 InboxPage --> IGroupInvitationService
-InboxPage --> DTOs
+InboxPage --> InboxDTOs
 InboxDTOs --> DTOs
 IGroupInvitationService <|.. GroupInvitationService
 IGroupInvitationRepository <|.. GroupInvitationRepository
@@ -106,7 +106,6 @@ GroupInvitationService --> DTOs
 GroupInvitationService --> GroupInvitation
 GroupInvitationRepository --> GroupInvitation
 
-User "1" <-- "0..*" GroupInvitation
 User "1" <-- "0..*" GroupInvitation
 Group "1" <-- "0..*" GroupInvitation
 GroupInvitation -->  DTOs

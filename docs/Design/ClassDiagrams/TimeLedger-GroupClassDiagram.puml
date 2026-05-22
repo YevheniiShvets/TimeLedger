@@ -74,6 +74,14 @@ package "Repository" #FFF3E0 {
   }
 
   interface IUserRepository
+  {
+  + GetById(id: int): User?
+  + GetByEmail(email: string): User?
+  + Add(user: User): User
+  + Update(user: User): User
+  + Delete(user: User): void
+  + Exists(email: string): bool
+}
 
   class GroupRepository {
 	- _connectionString: string
@@ -83,12 +91,9 @@ package "Repository" #FFF3E0 {
 GroupPages --> IGroupService
 GroupPages ..> AuthSession
 GroupPages --> GroupDTOs
-GroupDTOs --> GroupInfoDto
-GroupDTOs --> CreateGroupDto
-GroupDTOs --> UpdateGroupDto
-GroupDTOs --> AccountInfoDto
+GroupDTOs --> DTOs
 IGroupService <|.. GroupService
-GroupService --> GroupInfoDto
+GroupService --> DTOs
 GroupService --> Group
 GroupService --> User
 GroupService ..> IGroupRepository

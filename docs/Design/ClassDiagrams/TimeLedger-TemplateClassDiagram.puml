@@ -1,0 +1,45 @@
+﻿@startuml
+top to bottom direction
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 50
+hide empty members
+
+title TimeLedger - High Level Layered Architecture
+
+package "Presentation Layer" as Presentation #E3F2FD {
+  class "Presentation Pages" as PresentationPages
+}
+
+package "Service Layer" as ServiceLayer #EDE7F6 {
+  package "Contracts / DTOs" as DTOs #F3E5F5 {
+    class DTO 
+  }
+  package "Service" as Service #E8F5E9 {
+    interface ServiceInterface 
+    class ServiceClass 
+  }
+  package "Models" as Models #E8F5E9 {
+    class Model
+  }
+}
+
+package "Repository / Data Access" as Repository #FFF3E0 {
+  interface RepositoryInterface
+  class RepositoryClass 
+}
+
+"PresentationPages" ..> ServiceInterface
+"PresentationPages" ..> DTOs
+ServiceInterface <|.. ServiceClass
+ServiceClass ..> DTOs
+ServiceClass ..> RepositoryInterface
+RepositoryInterface <|.. RepositoryClass
+RepositoryInterface --> "Models"
+
+' Layout hints to keep lanes separated and reduce arrow crossings
+
+
+@enduml

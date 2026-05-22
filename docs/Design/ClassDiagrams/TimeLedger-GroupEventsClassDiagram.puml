@@ -30,36 +30,20 @@ package "Service" #E8F5E9 {
 package "Core Model" #EDE7F6 {
   class Event {
 	+ Id: int
-	+ OwnerType: EventOwnerType
 	+ OwnerId: int
 	+ Title: string
 	+ Description: string?
 	+ Location: string?
 	+ AllowOverlap: bool
-	+ EventType: EventType
 	+ StartTime: DateTime?
 	+ EndTime: DateTime?
 	+ DueAt: DateTime?
-	+ RecurrenceFrequency: RecurrenceFrequency?
 	+ RecurrenceInterval: int?
 	+ RecurrenceValue: string?
 	+ RecurrenceEndTime: DateTime?
 	+ RecurrenceMaxOccurrences: int?
   }
 
-  class Group {
-	+ Id: int
-	+ OwnerId: int
-	+ Name: string
-  }
-
-  class User {
-	+ Id: int
-	+ Name: string
-	+ Email: string
-	+ PasswordHash: string
-	+ CreatedAt: DateTime
-  }
 
   enum EventOwnerType {
 	User
@@ -81,56 +65,15 @@ package "Core Model" #EDE7F6 {
 }
 
 package "DTOs" #F3E5F5 {
-  class CreateEventDto {
-	+ Title: string
-	+ Description: string?
-	+ Location: string?
-	+ EventType: EventType
-	+ StartTime: DateTime?
-	+ EndTime: DateTime?
-	+ DueAt: DateTime?
-	+ AllowOverlap: bool
-	+ RecurrenceRule: RecurrenceRuleDto?
-  }
+  class CreateEventDto
 
-  class EventResponseDto {
-	+ Id: int
-	+ Title: string
-	+ Description: string?
-	+ Location: string?
-	+ StartTime: DateTime?
-	+ EndTime: DateTime?
-	+ AllowOverlap: bool
-	+ EventType: EventType
-	+ DueAt: DateTime?
-	+ RecurrenceFrequency: RecurrenceFrequency?
-	+ RecurrenceInterval: int?
-	+ RecurrenceEndTime: DateTime?
-	+ RecurrenceMaxOccurrences: int?
-	+ RecurrenceInfo: string?
-  }
+  class EventResponseDto
 
-  class GroupEventListItemDto {
-	+ GroupId: int
-	+ GroupName: string
-	+ Event: EventResponseDto
-  }
+  class GroupEventListItemDto 
 
-  class AccountInfoDto {
-	+ Id: int
-	+ Email: string
-	+ Name: string
-	+ Description: string
-	+ CreatedAt: DateTime
-  }
+  class AccountInfoDto 
 
-  class RecurrenceRuleDto {
-	+ RecurrenceFrequency: RecurrenceFrequency
-	+ RecurrenceInterval: int
-	+ RecurrenceValue: string?
-	+ RecurrenceEndTime: DateTime?
-	+ RecurrenceMaxOccurrences: int?
-  }
+  class RecurrenceRuleDto 
 }
 
 package "Repository" #FFF3E0 {
@@ -141,17 +84,18 @@ package "Repository" #FFF3E0 {
 
 GroupEventPages --> IGroupEventService
 GroupEventPages --> GroupEventDTOs
-GroupEventDTOs --> GroupEventListItemDto
+GroupEventDTOs --> DTOs
 IGroupEventService <|.. GroupEventService
 GroupEventService ..> IEventRepository
 GroupEventService ..> IGroupRepository
 GroupEventService ..> IUserRepository
-GroupEventService --> EventResponseDto
-GroupEventService --> AccountInfoDto
-GroupEventListItemDto --> EventResponseDto : contains
-CreateEventDto --> RecurrenceRuleDto : contains
-Event "1" ..> "1" EventType : uses
-Event "1" ..> "1" EventOwnerType : uses
-Event "1" ..> "0..1" RecurrenceFrequency : uses
+GroupEventService --> DTOs
+GroupEventService --> DTOs
+GroupEventListItemDto --> EventResponseDto
+CreateEventDto --> RecurrenceRuleDto 
+Event "1" ..> "1" EventType
+Event "1" ..> "1" EventOwnerType
+Event "1" ..> "0..1" RecurrenceFrequency
+IEventRepository --> Event
 
 @enduml
