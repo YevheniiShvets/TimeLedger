@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Users;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class InfoModel(UserService userService) : PageModel
+public class InfoModel(IUserService userService) : PageModel
 {
     public AccountInfoDto Account { get; private set; } = new();
 
@@ -28,4 +30,3 @@ public class InfoModel(UserService userService) : PageModel
         }
     }
 }
-

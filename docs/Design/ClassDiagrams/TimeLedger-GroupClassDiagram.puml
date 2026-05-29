@@ -1,0 +1,105 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Group Layered Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Group Pages" as GroupPages
+  class "Group DTOs" as GroupDTOs
+}
+
+package "Service" #E8F5E9 {
+  interface IGroupService {
+	+ GetAll(actorUserId: int): IEnumerable<GroupInfoDto>
+	+ GetById(groupId: int, userId: int): GroupInfoDto
+	+ Create(dto: CreateGroupDto, userId: int): GroupInfoDto
+	+ Update(groupId: int, dto: UpdateGroupDto, userId: int): GroupInfoDto
+	+ Delete(id: int, userId: int): void
+	+ RemoveMember(groupId: int, userId: int, actorUserId: int): void
+	+ GetMembers(groupId: int, userId: int): IEnumerable<AccountInfoDto>
+  }
+
+  class GroupService {
+	- groupRepository: IGroupRepository
+	- userRepository: IUserRepository
+  }
+
+  class AuthSession {
+	+ {static} UserIdKey: string
+	+ {static} UserEmailKey: string
+	+ {static} UserNameKey: string
+  }
+}
+
+package "DTOs" #F3E5F5 {
+  class GroupInfoDto
+  class CreateGroupDto
+  class UpdateGroupDto
+  class AccountInfoDto
+}
+
+package "Core Model" #EDE7F6 {
+  class Group {
+	+ Id: int
+	+ OwnerId: int
+	+ Name: string
+  }
+
+  class User {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+}
+
+package "Repository" #FFF3E0 {
+  interface IGroupRepository {
+	+ GetAllGroups(ownerId: int): IEnumerable<Group>
+	+ GetGroupById(id: int, ownerId: int): Group
+	+ CreateGroup(group: Group): Group
+	+ UpdateGroup(group: Group): Group
+	+ DeleteGroup(id: int, ownerId: int): void
+	+ GetGroupMembers(groupId: int): IEnumerable<int>
+	+ AddGroupMember(groupId: int, userId: int): void
+	+ RemoveGroupMember(groupId: int, userId: int): void
+	+ IsMember(groupId: int, userId: int): bool
+  }
+
+  interface IUserRepository
+  {
+  + GetById(id: int): User?
+  + GetByEmail(email: string): User?
+  + Add(user: User): User
+  + Update(user: User): User
+  + Delete(user: User): void
+  + Exists(email: string): bool
+}
+
+  class GroupRepository {
+	- _connectionString: string
+  }
+}
+
+GroupPages --> IGroupService
+GroupPages ..> AuthSession
+GroupPages --> GroupDTOs
+GroupDTOs --> DTOs
+IGroupService <|.. GroupService
+GroupService --> DTOs
+GroupService --> Group
+GroupService --> User
+GroupService ..> IGroupRepository
+GroupService ..> IUserRepository
+IGroupRepository <|.. GroupRepository
+GroupRepository --> Group
+
+@enduml
+

@@ -1,0 +1,74 @@
+﻿@page
+@model TimeLedger.Pages.Groups.Events.IndexModel
+@using TimeLedger.Core.Models.Events
+@{
+    ViewData["Title"] = "Group Events";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Group Events</h1>
+        <p class="page-subtitle">Shared events across your groups.</p>
+    </div>
+    <a class="btn-secondary" asp-page="/Groups/Index">Back to Groups</a>
+</div>
+
+@if (!Model.Events.Any())
+{
+    <div class="empty-state">
+        <p>No group events yet.</p>
+    </div>
+}
+else
+{
+    <section class="date-group">
+        @foreach (var item in Model.Events)
+        {
+            var e = item.Event;
+            var typeClass = e.EventType switch
+            {
+                EventType.Recurrence => "event-recurring",
+                EventType.Deadline => "event-deadline",
+                _ => "event-onetime"
+            };
+
+            <div class="event-card @typeClass">
+                <div class="event-card-left">
+                    <span class="event-title">@e.Title</span>
+                    <div class="event-meta">
+                        <span>👥 @item.GroupName</span>
+                        @if (e.EventType == EventType.Deadline)
+                        {
+                            <span>📅 Due at @(e.DueAt.HasValue ? e.DueAt.Value.ToString("dd/MM/yyyy HH:mm") : "Time TBD")</span>
+                        }
+                        else if (e.StartTime.HasValue && e.EndTime.HasValue)
+                        {
+                            <span>⏱ @e.StartTime.Value.ToString("dd/MM/yyyy HH:mm") - @e.EndTime.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                            @if (!string.IsNullOrWhiteSpace(e.Duration))
+                            {
+                                <span class="event-duration">@e.Duration</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>⏱ Time TBD</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(e.RecurrenceInfo))
+                        {
+                            <span class="event-recurrence">🔄 @e.RecurrenceInfo</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(e.Location))
+                        {
+                            <span class="event-location">📍 @e.Location</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(e.Description))
+                    {
+                        <span class="event-description">@e.Description</span>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+}
+

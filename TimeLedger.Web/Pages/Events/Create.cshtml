@@ -1,11 +1,12 @@
 ﻿@page
 @model TimeLedger.Pages.Events.CreateModel
+@using TimeLedger.Core.Models.Events
 @{
     ViewData["Title"] = "Create Event";
 }
 
 <div class="form-container">
-    <a href="/Events" class="form-back">← Back to Calendar</a>
+    <a href="" class="form-back">← Back to Calendar</a>
     <h1 class="form-title">Add Activity</h1>
     <p class="form-subtitle">Create a new activity in your schedule</p>
 
@@ -26,19 +27,52 @@
             <input asp-for="Input.Location" placeholder="e.g., Room 201, Online" />
         </div>
 
-        <div class="form-row">
+        <div class="form-group">
+            <label asp-for="Input.EventType">Event Type <span class="required">*</span></label>
+            <select asp-for="Input.EventType" asp-items="Html.GetEnumSelectList<EventType>()"></select>
+            <span asp-validation-for="Input.EventType" class="field-error"></span>
+        </div>
+
+        <div id="time-range-section" class="form-row">
             <div class="form-group">
                 <label asp-for="Input.StartTime">Start Time <span class="required">*</span></label>
                 <input type="datetime-local" asp-for="Input.StartTime"
-                       value="@(Model.Input.StartTime == default ? "" : Model.Input.StartTime.ToString("yyyy-MM-ddTHH:mm"))" />
+                       value="@(Model.Input.StartTime == null ? "" : Model.Input.StartTime.Value.ToString("yyyy-MM-ddTHH:mm"))" />
                 <span asp-validation-for="Input.StartTime" class="field-error"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.EndTime">End Time <span class="required">*</span></label>
                 <input type="datetime-local" asp-for="Input.EndTime"
-                       value="@(Model.Input.EndTime == default ? "" : Model.Input.EndTime.ToString("yyyy-MM-ddTHH:mm"))" />
+                       value="@(Model.Input.EndTime == null ? "" : Model.Input.EndTime.Value.ToString("yyyy-MM-ddTHH:mm"))" />
                 <span asp-validation-for="Input.EndTime" class="field-error"></span>
             </div>
+        </div>
+
+        <div id="recurrence-section" style="display: none;">
+            <h3>Recurrence Settings</h3>
+            <div class="form-group">
+                <label asp-for="Input.RecurrenceRule!.RecurrenceFrequency">Frequency</label>
+                <select asp-for="Input.RecurrenceRule!.RecurrenceFrequency" asp-items="Html.GetEnumSelectList<RecurrenceFrequency>()">
+                    <option value="">Select frequency...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.RecurrenceRule!.RecurrenceInterval">Interval (every N)</label>
+                <input type="number" asp-for="Input.RecurrenceRule!.RecurrenceInterval" min="1" value="1" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.RecurrenceRule!.RecurrenceEndTime">End Date (Optional)</label>
+                <input type="datetime-local" asp-for="Input.RecurrenceRule!.RecurrenceEndTime" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.RecurrenceRule!.RecurrenceMaxOccurrences">Max Occurrences (Optional)</label>
+                <input type="number" asp-for="Input.RecurrenceRule!.RecurrenceMaxOccurrences" min="1" />
+            </div>
+        </div>
+
+        <div id="deadline-section" class="form-group" style="display: none;">
+            <label asp-for="Input.DueAt">Due Date (For Deadline Events)</label>
+            <input type="datetime-local" asp-for="Input.DueAt" />
         </div>
 
         @if (Model.ShowOverlapWarning)
@@ -56,7 +90,53 @@
 
         <div class="btn-row">
             <button type="submit" class="btn-primary">Add Activity</button>
-            <a href="/Events" class="btn-secondary">Cancel</a>
+            <a href="" class="btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventTypeSelect = document.querySelector('select[name="Input.EventType"]');
+        const recurrenceSection = document.getElementById('recurrence-section');
+        const deadlineSection = document.getElementById('deadline-section');
+        const timeRangeSection = document.getElementById('time-range-section');
+        const startInput = document.querySelector('input[name="Input.StartTime"]');
+        const endInput = document.querySelector('input[name="Input.EndTime"]');
+        const dueInput = document.querySelector('input[name="Input.DueAt"]');
+
+        function toggleSections() {
+            const selected = parseInt(eventTypeSelect.value, 10);
+            const isRecurrence = selected === @((int)EventType.Recurrence);
+            const isDeadline = selected === @((int)EventType.Deadline);
+
+            // Toggle visibility
+            recurrenceSection.style.display = isRecurrence ? 'block' : 'none';
+            deadlineSection.style.display = isDeadline ? 'block' : 'none';
+            timeRangeSection.style.display = isDeadline ? 'none' : 'flex';
+
+            // Toggle disabled state so hidden fields aren't submitted (avoids server validation errors)
+            const recurrenceInputs = recurrenceSection.querySelectorAll('input, select');
+            recurrenceInputs.forEach(input => {
+                input.disabled = !isRecurrence;
+            });
+
+            if (startInput && endInput)
+            {
+                startInput.required = !isDeadline;
+                endInput.required = !isDeadline;
+                startInput.disabled = isDeadline;
+                endInput.disabled = isDeadline;
+            }
+
+            if (dueInput)
+            {
+                dueInput.required = isDeadline;
+                dueInput.disabled = !isDeadline;
+            }
+        }
+
+        eventTypeSelect?.addEventListener('change', toggleSections);
+        toggleSections();
+    });
+</script>

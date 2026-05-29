@@ -1,0 +1,42 @@
+@startuml TimeLedger_Iteration1_UseCases
+
+title TimeLedger — Use Case Diagram\nIteration 1: Core Event Management
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #4A90D9
+  ArrowColor #4A90D9
+  ActorBorderColor #2C5F8A
+  ActorBackgroundColor #D6E8F7
+}
+
+actor User
+
+rectangle "TimeLedger — Iteration 1" {
+
+  usecase "UC-1\nCreate a New Event" as UC1
+  usecase "UC-2\nView Events in\nDay-Based Calendar View" as UC2
+  usecase "UC-3\nView Event Duration" as UC3
+  usecase "UC-4\nEdit an Existing Event" as UC4
+  usecase "UC-5\nDelete an Event" as UC5
+  usecase "UC-6\nDetect and Warn\non Time Overlap" as UC6
+
+
+}
+
+User --> UC1
+User --> UC2
+User --> UC4
+User --> UC5
+
+UC2 .> UC3 : <<include>>
+
+
+UC1 .> UC6 : <<include>>
+UC4 .> UC6 : <<include>>
+
+
+@enduml

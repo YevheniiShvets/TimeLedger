@@ -1,20 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.Models;
+using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.Interfaces.Events;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Events;
 
-public class IndexModel : PageModel
+public class IndexModel(IEventService eventService, IEventOccurrenceService occurrenceService) : PageModel
 {
-    private readonly EventService _svc;
-
-    public IndexModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
     public IEnumerable<EventResponseDto> Events { get; set; } = [];
 
     public IActionResult OnGet()
@@ -23,7 +17,43 @@ public class IndexModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        Events = _svc.GetAll(EventOwnerType.User, userId.Value);
+        var ownerType = EventOwnerType.User;
+        var ownerId = userId.Value;
+        
+        var rangeStart = DateTime.Today.AddMonths(-3);
+        var rangeEnd = DateTime.Today.AddMonths(3);
+
+        var recurrenceEvents = occurrenceService.GetOccurrencesInRange(ownerType, ownerId, rangeStart, rangeEnd).ToList();
+        var oneTimeAndDeadlineEvents = eventService.GetAll(ownerType, ownerId)
+            .Where(e => e.EventType == EventType.OneTime || e.EventType == EventType.Deadline)
+            .Select(e =>
+            {
+                if (e.DueAt is null && e.EventType == EventType.Deadline)
+                {
+                    throw new InvalidOperationException($"Deadline event with ID {e.Id} is missing DueAt value.");
+                }
+
+                return new EventResponseDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Description = e.Description,
+                    Location = e.Location,
+                    StartTime = e.StartTime ?? e.DueAt.Value,
+                    EndTime = e.EndTime ?? e.DueAt.Value.AddSeconds(1),
+                    OwnerType = e.OwnerType,
+                    OwnerId = e.OwnerId,
+                    EventType = e.EventType,
+                    RecurrenceInfo = e.RecurrenceInfo
+
+                };
+            });
+        Events = recurrenceEvents.Concat(oneTimeAndDeadlineEvents)
+            .OrderBy(e => e.StartTime)
+            .ThenBy(e => e.EndTime)
+            .ToList();
+        
+
         return Page();
     }
 }

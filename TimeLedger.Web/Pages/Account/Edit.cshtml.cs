@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Users;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class EditAccountModel(UserService userService) : PageModel
+public class EditAccountModel(IUserService userService) : PageModel
 {
     [BindProperty]
     public UpdateAccountDto Input { get; set; } = new();
@@ -64,4 +66,3 @@ public class EditAccountModel(UserService userService) : PageModel
         }
     }
 }
-

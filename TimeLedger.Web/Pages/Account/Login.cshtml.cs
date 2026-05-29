@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Users;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class LoginModel(UserService userService) : PageModel
+public class LoginModel(IUserService userService) : PageModel
 {
     [BindProperty]
     public LoginDto Input { get; set; } = new();
@@ -28,7 +30,7 @@ public class LoginModel(UserService userService) : PageModel
 
         try
         {
-            var account = userService.Login(Input);
+            AccountInfoDto account = userService.Login(Input);
             HttpContext.Session.SetInt32(AuthSession.UserIdKey, account.Id);
             HttpContext.Session.SetString(AuthSession.UserEmailKey, account.Email);
             HttpContext.Session.SetString(AuthSession.UserNameKey, account.Name);
@@ -42,4 +44,3 @@ public class LoginModel(UserService userService) : PageModel
         }
     }
 }
-

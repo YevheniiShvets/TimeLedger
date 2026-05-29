@@ -1,0 +1,82 @@
+﻿@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide empty members
+
+title TimeLedger - Account Layered Class Diagram
+
+package "Presentation" #E3F2FD {
+  class "Account Pages" as AccountPages 
+  class "Account DTOs" as AccountDTOs 
+}
+
+package "Service" #E8F5E9 {
+  interface IUserService {
+	+ Register(dto: RegisterDto): AccountInfoDto
+	+ Login(dto: LoginDto): AccountInfoDto
+	+ GetById(id: int): AccountInfoDto
+	+ Update(id: int, dto: UpdateAccountDto): AccountInfoDto
+	+ Delete(id: int): void
+  }
+
+  class UserService {
+	- userRepository: IUserRepository
+  }
+
+  class AuthSession {
+	+ {static} UserIdKey: string
+	+ {static} UserEmailKey: string
+	+ {static} UserNameKey: string
+  }
+}
+package "Core Model" #EDE7F6 {
+  class User {
+	+ Id: int
+	+ Name: string
+	+ Email: string
+	+ PasswordHash: string
+	+ CreatedAt: DateTime
+  }
+}
+
+package "DTOs" #F3E5F5 {
+  class RegisterDto 
+  class LoginDto
+  class UpdateAccountDto
+  class AccountInfoDto
+}
+
+
+
+package "Repository" #FFF3E0 {
+  interface IUserRepository  {
+	+ GetById(id: int): User?
+	+ GetByEmail(email: string): User?
+	+ Add(user: User): User
+	+ Update(user: User): User
+	+ Delete(user: User): void
+	+ Exists(email: string): bool
+  }
+
+  class UserRepository  {
+	- _connectionString: string
+  }
+}
+
+AccountPages --> IUserService
+AccountPages ..> AuthSession
+AccountPages --> AccountDTOs
+AccountDTOs --> DTOs
+IUserService <|.. UserService
+UserService --> DTOs
+UserService --> User
+UserService ..> IUserRepository
+IUserRepository <|.. UserRepository
+UserRepository --> User
+
+@enduml
+

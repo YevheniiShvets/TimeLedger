@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Groups;
+using TimeLedger.Core.Interfaces.Groups;
 using TimeLedger.Core.Services;
+
 
 namespace TimeLedger.Pages.Groups;
 
-public class IndexModel(GroupService groupService) : PageModel
+public class IndexModel(IGroupService groupService) : PageModel
 {
     public IEnumerable<GroupInfoDto> Groups { get; private set; } = [];
     public int CurrentUserId { get; private set; }
@@ -21,4 +23,3 @@ public class IndexModel(GroupService groupService) : PageModel
         return Page();
     }
 }
-

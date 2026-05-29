@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TimeLedger.Core.Interfaces;
+using TimeLedger.Core.Interfaces.Events;
+using TimeLedger.Core.Interfaces.Groups;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Services;
+using TimeLedger.Core.Services.Event;
 using TimeLedger.Infrastructure.Repositories;
 
 
@@ -15,10 +19,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IGroupInvitationRepository, GroupInvitationRepository>();
 
-builder.Services.AddScoped<EventService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<GroupService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IGroupEventService, GroupEventService>();
+builder.Services.AddScoped<IRecurrenceService, RecurrenceService>();
+builder.Services.AddScoped<IEventOccurrenceService, EventOccurrenceService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<IGroupInvitationService, GroupInvitationService>();
 
 builder.Services.AddSession(options =>
 {

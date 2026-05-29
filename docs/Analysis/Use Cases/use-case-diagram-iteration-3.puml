@@ -1,0 +1,64 @@
+@startuml TimeLedger_Iteration3_UseCases
+
+title TimeLedger — Use Case Diagram\nIteration 3: Invitations, Group Events & Event Types
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #4A90D9
+  ArrowColor #4A90D9
+  ActorBorderColor #2C5F8A
+  ActorBackgroundColor #D6E8F7
+}
+
+actor User
+actor "Group Owner" as Owner
+actor "Group Member" as Member
+
+User <|-- Owner
+User <|-- Member
+
+rectangle "TimeLedger — Iteration 3" {
+
+  package "Invitation Inbox" {
+    usecase "UC-18\nInvite a User\nto a Group" as UC18
+    usecase "UC-19\nAccept a Group\nInvitation" as UC19
+    usecase "UC-20\nDecline a Group\nInvitation" as UC20
+  }
+
+  package "Group Events" {
+    usecase "UC-21\nCreate a\nGroup Event" as UC21
+    usecase "UC-22\nView Group\nEvents" as UC22
+    usecase "UC-23\nValidate Group\nEvent Overlap" as UC23
+  }
+
+  package "Event Types" {
+    usecase "UC-24\nSet Event Type\non Creation" as UC24
+    usecase "UC-25\nChange Event Type\nfor Existing Event" as UC25
+  }
+
+
+}
+
+Owner --> UC18
+
+
+User --> UC19
+User --> UC20
+
+Owner --> UC21
+Member --> UC22
+Owner --> UC22
+
+
+UC21 .> UC23 : <<include>>
+
+
+UC21 .> UC24 : <<include>>
+
+
+User --> UC25
+
+@enduml

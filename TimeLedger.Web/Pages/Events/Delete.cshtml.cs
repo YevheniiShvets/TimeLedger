@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.Interfaces.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Events;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IEventService svc) : PageModel
 {
-    private readonly EventService _svc;
-
-    public DeleteModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
     public EventResponseDto Event { get; set; } = null!;
 
     public IActionResult OnGet(int id)
@@ -24,7 +20,7 @@ public class DeleteModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        var ev =  _svc.GetById(id, EventOwnerType.User, userId.Value);
+        var ev =  svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
         Event = ev;
@@ -39,7 +35,7 @@ public class DeleteModel : PageModel
 
         try
         {
-             _svc.Delete(id, EventOwnerType.User, userId.Value);
+             svc.Delete(id, EventOwnerType.User, userId.Value);
         }
         catch (KeyNotFoundException)
         {

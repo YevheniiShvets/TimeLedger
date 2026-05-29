@@ -1,20 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.Interfaces.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Events;
 
-public class EditModel : PageModel
+public class EditModel(IEventService svc) : PageModel
 {
-    private readonly EventService _svc;
-
-    public EditModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
     [BindProperty]
     public UpdateEventDto Input { get; set; } = new();
 
@@ -29,20 +25,32 @@ public class EditModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
-        var ev = _svc.GetById(id, EventOwnerType.User, userId.Value);
+        var ev = svc.GetById(id, EventOwnerType.User, userId.Value);
         if (ev is null)
             return NotFound();
 
         EventId = id;
-        Input = new UpdateEventDto
-        {
-            Title        = ev.Title,
-            Description  = ev.Description,
-            Location     = ev.Location,
-            StartTime    = ev.StartTime,
-            EndTime      = ev.EndTime,
-            AllowOverlap = ev.AllowOverlap,
-        };
+        if (ev.RecurrenceInterval != null)
+            Input = new UpdateEventDto
+            {
+                Title = ev.Title,
+                Description = ev.Description,
+                Location = ev.Location,
+                EventType = ev.EventType,
+                StartTime = ev.StartTime,
+                EndTime = ev.EndTime,
+                DueAt = ev.DueAt,
+                AllowOverlap = ev.AllowOverlap,
+                RecurrenceRule = ev.EventType == EventType.Recurrence && ev.RecurrenceFrequency.HasValue
+                    ? new RecurrenceRuleDto
+                    {
+                        RecurrenceFrequency = ev.RecurrenceFrequency.Value,
+                        RecurrenceInterval = ev.RecurrenceInterval.Value,
+                        RecurrenceEndTime = ev.RecurrenceEndTime,
+                        RecurrenceMaxOccurrences = ev.RecurrenceMaxOccurrences
+                    }
+                    : null
+            };
         return Page();
     }
 
@@ -52,12 +60,25 @@ public class EditModel : PageModel
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
 
+        if (Input.EventType == EventType.Deadline)
+        {
+            ModelState.Remove("Input.StartTime");
+            ModelState.Remove("Input.EndTime");
+            Input.StartTime = null;
+            Input.EndTime = null;
+        }
+        else if (Input.EventType == EventType.OneTime)
+        {
+            ModelState.Remove("Input.DueAt");
+            Input.DueAt = null;
+        }
+
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) = _svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
+            var (_, hasOverlap) = svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
             if (hasOverlap)
             {
                 ShowOverlapWarning = true;

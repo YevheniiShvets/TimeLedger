@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.Interfaces.Events;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Events;
 
-public class CreateModel : PageModel
+public class CreateModel(IEventService svc) : PageModel
 {
-    private readonly EventService _svc;
-
-    public CreateModel(EventService svc)
-    {
-        _svc = svc;
-    }
-
     [BindProperty]
     public CreateEventDto Input { get; set; } = new();
 
@@ -30,18 +26,32 @@ public class CreateModel : PageModel
         return Page();
     }
 
-    public  IActionResult OnPost()
+    public IActionResult OnPost()
     {
         var userId = HttpContext.Session.GetInt32(AuthSession.UserIdKey);
         if (!userId.HasValue)
             return RedirectToPage("/Account/Login");
+
+        if (Input.EventType == EventType.Deadline)
+        {
+            // Start/End are hidden for deadline events, so skip their required validation.
+            ModelState.Remove("Input.StartTime");
+            ModelState.Remove("Input.EndTime");
+            Input.StartTime = null;
+            Input.EndTime = null;
+        }
+        else if (Input.EventType == EventType.OneTime)
+        {
+            ModelState.Remove("Input.DueAt");
+            Input.DueAt = null;
+        }
 
         if (!ModelState.IsValid)
             return Page();
 
         try
         {
-            var (_, hasOverlap) =  _svc.Create(Input, EventOwnerType.User, userId.Value);
+            var (_, hasOverlap) =  svc.Create(Input, EventOwnerType.User, userId.Value);
             if (!hasOverlap) return RedirectToPage("Index");
             ShowOverlapWarning = true;
             return Page();

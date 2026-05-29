@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Groups;
+using TimeLedger.Core.Interfaces.Groups;
 using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
 
-public class Delete (GroupService groupService) : PageModel
+public class Delete (IGroupService groupService) : PageModel
 {
     
     public GroupInfoDto Group { get; private set; } = new();

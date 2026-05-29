@@ -1,10 +1,13 @@
 ﻿using TimeLedger.Core.DTOs;
+using TimeLedger.Core.DTOs.Users;
 using TimeLedger.Core.Interfaces;
+using TimeLedger.Core.Interfaces.Users;
 using TimeLedger.Core.Models;
+using TimeLedger.Core.Models.Users;
 
 namespace TimeLedger.Core.Services;
 
-public class UserService(IUserRepository userRepository)
+public class UserService(IUserRepository userRepository) : IUserService
 {
     public AccountInfoDto Register(RegisterDto dto)
     {

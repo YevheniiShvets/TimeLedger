@@ -52,6 +52,18 @@
     transition: box-shadow 0.15s;
 }
 
+.event-card.event-onetime {
+    border-left-color: #4A90D9;
+}
+
+.event-card.event-recurring {
+    border-left-color: #2e7d32;
+}
+
+.event-card.event-deadline {
+    border-left-color: #c62828;
+}
+
 .event-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }

@@ -5,14 +5,22 @@
 }
 
 <div class="form-container">
-    <a href="/Events" class="form-back">← Back to Calendar</a>
+    <a asp-page="/Events/Index" class="form-back">← Back to Calendar</a>
     <h1 class="form-title">Delete Activity</h1>
     <p class="form-subtitle">This action cannot be undone</p>
 
     <div class="delete-card">
         <p>Are you sure you want to delete this event?</p>
         <p><strong>@Model.Event.Title</strong></p>
-        <p>@Model.Event.StartTime.ToString("dd/MM/yyyy HH:mm") - @Model.Event.EndTime.ToString("dd/MM/yyyy HH:mm")</p>
+        <p>
+            @(Model.Event.StartTime.HasValue
+                ? Model.Event.StartTime.Value.ToString("dd/MM/yyyy HH:mm")
+                : "Time TBD")
+            -
+            @(Model.Event.EndTime.HasValue
+                ? Model.Event.EndTime.Value.ToString("dd/MM/yyyy HH:mm")
+                : "Time TBD")
+        </p>
         @if (!string.IsNullOrWhiteSpace(Model.Event.Location))
         {
             <p>@Model.Event.Location</p>
@@ -22,7 +30,7 @@
     <form method="post">
         <div class="btn-row">
             <button type="submit" class="btn-danger">Delete</button>
-            <a href="/Events" class="btn-secondary">Cancel</a>
+            <a asp-page="/Events/Index" class="btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
