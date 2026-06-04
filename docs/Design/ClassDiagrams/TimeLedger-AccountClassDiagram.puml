@@ -73,10 +73,10 @@ AccountPages --> AccountDTOs
 AccountDTOs --> DTOs
 IUserService <|.. UserService
 UserService --> DTOs
-UserService --> User
+UserService "1" --> "0..*" User
 UserService ..> IUserRepository
 IUserRepository <|.. UserRepository
-UserRepository --> User
+UserRepository "1" --> "0..*" User
 
 @enduml
 

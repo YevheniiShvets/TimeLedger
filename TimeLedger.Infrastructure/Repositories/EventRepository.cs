@@ -118,7 +118,7 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         WHERE Id = @Id AND OwnerType = @OwnerType AND OwnerId = @OwnerId";
         
         using var command = new SqlCommand(sql, connection);
-        //command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = e.Id;
         command.Parameters.Add("@OwnerType", SqlDbType.TinyInt).Value = (byte)e.OwnerType;
         command.Parameters.Add("@OwnerId", SqlDbType.Int).Value = e.OwnerId;
         command.Parameters.Add("@Title", SqlDbType.NVarChar, 200).Value = e.Title;
@@ -135,7 +135,10 @@ public class EventRepository(IConfiguration configuration) : IEventRepository
         command.Parameters.Add("@RecurrenceEndTime", SqlDbType.DateTime2).Value = (object?)e.RecurrenceEndTime ?? DBNull.Value;
         command.Parameters.Add("@RecurrenceMaxOccurrences", SqlDbType.Int).Value = (object?)e.RecurrenceMaxOccurrences ?? DBNull.Value;
         
-        command.ExecuteNonQuery();
+        var rowsAffected = command.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new KeyNotFoundException("Event was not updated because no matching row was found.");
+
         return e;
     }
 

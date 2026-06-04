@@ -96,6 +96,6 @@ CreateEventDto --> RecurrenceRuleDto
 Event "1" ..> "1" EventType
 Event "1" ..> "1" EventOwnerType
 Event "1" ..> "0..1" RecurrenceFrequency
-IEventRepository --> Event
+IEventRepository "1" --> "0..*" Event
 
 @enduml

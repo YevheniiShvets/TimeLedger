@@ -94,12 +94,12 @@ GroupPages --> GroupDTOs
 GroupDTOs --> DTOs
 IGroupService <|.. GroupService
 GroupService --> DTOs
-GroupService --> Group
-GroupService --> User
+GroupService "1" --> "0..*" Group
+GroupService "1" --> "0..*" User
 GroupService ..> IGroupRepository
 GroupService ..> IUserRepository
 IGroupRepository <|.. GroupRepository
-GroupRepository --> Group
+GroupRepository "1" --> "0..*" Group
 
 @enduml
 

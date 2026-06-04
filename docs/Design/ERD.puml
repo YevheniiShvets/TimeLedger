@@ -1,0 +1,58 @@
+﻿@startuml TimeLedger_ERD
+!define TABLENAME(name) class name << (T, #FFAAAA) >>
+
+TABLENAME(Users) {
+    + id: INT << PK >>
+    - name: NVARCHAR(100)
+    - email: NVARCHAR(254) << UNIQUE >>
+    - passwordHash: NVARCHAR(1000)
+    - createdAt: DATETIME2
+}
+
+TABLENAME(Groups) {
+    + id: INT << PK >>
+    - ownerId: INT << FK >>
+    - name: NVARCHAR(100)
+}
+
+TABLENAME(Events) {
+    + id: INT << PK >>
+    - Title: NVARCHAR(200)
+    - Description: NVARCHAR(1000)
+    - Location: NVARCHAR(300)
+    - StartTime: DATETIME2
+    - EndTime: DATETIME2
+    - AllowOverlap: BIT
+    - OwnerType: TINYINT
+    - OwnerId: INT
+    - EventType: TINYINT
+    - DueAt: DATETIME2
+    - RecurrenceFrequency: TINYINT
+    - RecurrenceInterval: INT
+    - RecurrenceValue: NVARCHAR(max)
+    - RecurrenceEndTime: DATETIME2
+    - RecurrenceMaxOccurrences: INT
+}
+
+TABLENAME(GroupMembers) {
+    + groupId: INT << PK, FK >>
+    + userId: INT << PK, FK >>
+}
+
+TABLENAME(GroupInvitations) {
+    + Id: INT << PK >>
+    - GroupId: INT << FK >>
+    - InviterByUserID: INT << FK >>
+    - InviterUserId: INT << FK >>
+    - CreatedAt: DATETIME2
+    - ExpiresAt: DATETIME2
+}
+Users ||--o{ Groups: "1:M (owns)"
+Users ||--o{ Events: "1:M logical owner (ownerType=User)"
+Groups ||--o{ Events: "1:M logical owner (ownerType=Group)"
+GroupMembers }o--|| Users
+GroupMembers }o--|| Groups
+GroupInvitations }o--|| Groups
+GroupInvitations }o--|| Users
+
+@enduml

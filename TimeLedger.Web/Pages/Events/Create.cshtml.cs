@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
 using TimeLedger.Core.DTOs.Events;
 using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models;
 using TimeLedger.Core.Models.Events;
 using TimeLedger.Core.Services;
 
@@ -34,7 +32,6 @@ public class CreateModel(IEventService svc) : PageModel
 
         if (Input.EventType == EventType.Deadline)
         {
-            // Start/End are hidden for deadline events, so skip their required validation.
             ModelState.Remove("Input.StartTime");
             ModelState.Remove("Input.EndTime");
             Input.StartTime = null;

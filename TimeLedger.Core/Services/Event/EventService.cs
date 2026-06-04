@@ -20,7 +20,7 @@ public class EventService(IEventRepository repo) : IEventService
 
         ValidateFields(dto);
 
-        if (!dto.AllowOverlap)
+        if (!dto.AllowOverlap && dto.EventType != EventType.Deadline)
         {
             if (repo.HasOverlap(dto.StartTime!.Value, dto.EndTime!.Value, null, ownerType, ownerId))
                 return (Map(ToEntity(dto, ownerType, ownerId)), true);
@@ -37,13 +37,13 @@ public class EventService(IEventRepository repo) : IEventService
         
         ValidateFields(dto);
 
-        if (!dto.AllowOverlap && entity.EventType != EventType.Deadline)
+        if (!dto.AllowOverlap && dto.EventType != EventType.Deadline) //Problem 1 was checking for entity instead of dto (idk why I did that)
         {
             if (repo.HasOverlap(dto.StartTime!.Value, dto.EndTime!.Value, id, ownerType, ownerId))
                 return (Map(entity), true);
         }
 
-        var saved = repo.Update(ToEntity(dto));
+        var saved = repo.Update(ToEntity(dto, ownerType, ownerId, id));
 
         return (Map(saved), false);
     }
@@ -148,8 +148,11 @@ public class EventService(IEventRepository repo) : IEventService
         RecurrenceEndTime = dto.RecurrenceRule?.RecurrenceEndTime,
         RecurrenceMaxOccurrences = dto.RecurrenceRule?.RecurrenceMaxOccurrences
     };
-    private static Models.Events.Event ToEntity(UpdateEventDto dto) => new() //DTO -> Entity (update)
+    private static Models.Events.Event ToEntity(UpdateEventDto dto, EventOwnerType ownerType, int ownerId, int eventId) => new() //DTO -> Entity (update)
     {
+        Id = eventId,
+        OwnerType = ownerType,
+        OwnerId = ownerId,
         Title = dto.Title.Trim(),
         Description = dto.Description,
         Location = dto.Location,

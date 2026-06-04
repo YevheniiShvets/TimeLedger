@@ -96,7 +96,7 @@ The live implementation now includes account management, authenticated event sch
 
 | ID    | Requirement | Status      |
 |-------|-|-------------|
-| FR-1  | The system shall allow a user to create a new event with a title, optional description, start time, and end time | Implemented |
+| FR-1  | The system shall allow a user to create differently-typed events with a title, optional description and other type-related fields | Implemented |
 | FR-2  | The system shall validate that the start time is strictly before the end time | Implemented |
 | FR-3  | The system shall warn user when creating or updating events that overlap with existing events | Implemented |
 | FR-4  | The system shall allow users to view their events in a day-based calendar view | Implemented |
@@ -107,17 +107,16 @@ The live implementation now includes account management, authenticated event sch
 | FR-9  | Register users with email and password | Implemented |
 | FR-10 | Authenticate users via session auth | Implemented |
 | FR-11 | Associate events with the user who created them | Implemented |
-| FR-12 | Prevent access to other users' events | Implemented |
+| FR-12 | System should prevent users from accessing pages they do not have access to| Implemented |
 | FR-13 | Allow users to create groups and become group owners | Implemented |
-| FR-14 | Allow group owners to add/remove members by email | Implemented |
+| FR-14 | Allow group owners to manage group members | Implemented |
 | FR-15 | Restrict group access to owners and members | Implemented |
-| FR-16 | Allow users to log out and clear session | Implemented |
+| FR-16 | Allow users to log out | Implemented |
 | FR-17 | Allow users to view and edit account information | Implemented |
 | FR-18 | Allow group owners to invite users to groups by email | Implemented |
 | FR-19 | Show group invitations in inbox and allow accept/decline actions | Implemented |
-| FR-20 | Support event types: `OneTime`, `Recurrence`, and `Deadline` | Implemented |
-| FR-21 | Allow user to change event type for existing events | Implemented |
-| FR-22 | Validate group event overlaps against group schedule and member events | Implemented |
+
+
 
 
 ## 7. Non-functional requirements
@@ -130,31 +129,24 @@ The live implementation now includes account management, authenticated event sch
 
 Full use case details are documented in the separate documents for use cases per iteration.
 
-| Use Case | Description                             | Related FRs       | Iteration |
-|----------|-----------------------------------------|-------------------|----------|
-| UC-1     | Create a new event                      | FR-1, FR-2, FR-7  |1|
-| UC-2     | View events in day-based calendar view  | FR-4              |1|
-| UC-3     | View event duration                     | FR-8              |1|
-| UC-4     | Edit an existing event                  | FR-5, FR-2, FR-3, FR-7 |1|
-| UC-5     | Delete an event                         | FR-5              |1|
-| UC-6     | Detect and warn on time overlap         | FR-3              |1|
-| UC-8     | Register an account                                  | FR-9                 |2|
-| UC-9     | Log in                                               | FR-10                |2|
-| UC-10    | View signed-in account in sidebar                    | FR-10                |2|
-| UC-11    | Log out                                              | FR-16                |2|
-| UC-12    | View and edit account information                    | FR-17                |2|
-| UC-13    | View own events only                                 | FR-11, FR-12         |2|
-| UC-14    | Create a group                                       | FR-13                |2|
-| UC-15    | Add and remove group members                         | FR-14                |2|
-| UC-16    | View groups                                          | FR-15                |2|
-| UC-18    | Invite a user to a group                                 | FR-18                            |3|
-| UC-19    | Accept a group invitation                                | FR-19                            |3|
-| UC-20    | Decline a group invitation                               | FR-19                            |3|
-| UC-21    | Create a group event                                     | Implemented feature (group events) |3|
-| UC-22    | View group events                                        | Implemented feature (group events) |3|
-| UC-23    | Validate group event overlap                             | FR-22                            |3|
-| UC-24    | Set event type on creation                               | FR-20                            |3|
-| UC-25    | Change event type for an existing event                  | FR-21                            |3|
+| Use Case | Description                             | Related FRs       |
+|----------|-----------------------------------------|-------------------|
+| UC-1     | Create a new event                      | FR-1, FR-2, FR-7  |
+| UC-2     | View events in day-based calendar view  | FR-4              |
+| UC-3     | Edit an existing event                  | FR-5, FR-2, FR-3, FR-7 |
+| UC-4     | Delete an event                         | FR-5              |
+| UC-5     | Register an account                     | FR-9                 |
+| UC-6     | Log in                                  | FR-10                |
+| UC-7     | View signed-in account in sidebar       | FR-10                |
+| UC-8     | Log out                                 | FR-16                |
+| UC-9     | View and edit account information       | FR-17                |
+| UC-10    | Create a group                          | FR-13                |
+| UC-11    | Manage group members                    | FR-14                |
+| UC-12    | View groups                             | FR-15                |
+| UC-13    | Accept a group invitation               | FR-19                            |
+| UC-14    | Decline a group invitation              | FR-19                            |
+| UC-15    | Create a group event                    | Implemented feature (group events) |
+| UC-16    | View group events                       | Implemented feature (group events) |
 
 
 ## 9. Summary

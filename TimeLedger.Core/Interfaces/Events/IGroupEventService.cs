@@ -5,7 +5,7 @@ namespace TimeLedger.Core.Interfaces.Events;
 
 public interface IGroupEventService
 {
-    IEnumerable<GroupEventResponse> GetAllForUser(int actorUserId);
+    IEnumerable<GroupEventResponseDto> GetAllForUser(int actorUserId);
     (EventResponseDto dto, bool hasOverlap, IReadOnlyList<AccountInfoDto> overlappingUsers) Create(int groupId, CreateEventDto dto, int actorUserId);
 }
 

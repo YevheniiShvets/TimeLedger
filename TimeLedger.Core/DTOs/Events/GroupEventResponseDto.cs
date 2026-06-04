@@ -1,6 +1,6 @@
 ﻿namespace TimeLedger.Core.DTOs.Events;
 
-public class GroupEventResponse
+public class GroupEventResponseDto
 {
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;

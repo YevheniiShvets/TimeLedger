@@ -11,7 +11,7 @@ namespace TimeLedger.Core.Services.Event;
 
 public class GroupEventService(IEventRepository eventRepository, IGroupRepository groupRepository, IUserRepository userRepository) : IGroupEventService
 {
-    public IEnumerable<GroupEventResponse> GetAllForUser(int actorUserId)
+    public IEnumerable<GroupEventResponseDto> GetAllForUser(int actorUserId)
     {
         
         var groups = groupRepository.GetAllGroups(actorUserId).ToList(); // Gets all groups for user
@@ -25,7 +25,7 @@ public class GroupEventService(IEventRepository eventRepository, IGroupRepositor
         var events = groupsEvents.Select(e => // Maps all events to GroupEventListItemDto
         {
             var group = groups.First(g => g.Id == e.OwnerId);
-            return new GroupEventResponse
+            return new GroupEventResponseDto
             {
                 GroupId = group.Id,
                 GroupName = group.Name,

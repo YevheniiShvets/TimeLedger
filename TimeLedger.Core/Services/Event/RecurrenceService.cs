@@ -16,9 +16,6 @@ public class RecurrenceService : IRecurrenceService
         if (eventEnd <= eventStart)
             return [];
 
-        if (recurrence is null)
-            return [];
-
         var interval = recurrence.RecurrenceInterval < 1 ? 1 : recurrence.RecurrenceInterval;
         var stopAt = recurrence.RecurrenceEndTime ?? DateTime.Now.AddDays(100);
         var maxOccurrences = recurrence.RecurrenceMaxOccurrences ?? 100;

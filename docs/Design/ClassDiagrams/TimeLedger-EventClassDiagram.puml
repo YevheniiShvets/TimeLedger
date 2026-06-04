@@ -105,7 +105,7 @@ EventPages --> EventDTOs
 IEventService <|.. EventService
 IEventOccurrenceService <|.. EventOccurrenceService
 EventService --> EventDTOs
-EventService --> Event
+EventService "1" --> "0..*" Event
 EventService ..> IEventRepository
 EventOccurrenceService --> EventDTOs
 EventOccurrenceService --> Event
@@ -113,8 +113,8 @@ EventOccurrenceService ..> IEventRepository
 EventOccurrenceService ..> IRecurrenceService
 IEventRepository <|.. EventRepository
 IEventRepository <|.. InMemoryEventRepository
-EventRepository --> Event
-InMemoryEventRepository --> Event
+EventRepository "1" --> "0..*" Event
+InMemoryEventRepository "1" --> "0..*" Event
 Event "1" ..> "1" EventOwnerType
 Event "1" ..> "1" EventType
 Event "1" ..> "0..1" RecurrenceFrequency

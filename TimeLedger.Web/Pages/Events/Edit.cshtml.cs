@@ -79,7 +79,7 @@ public class EditModel(IEventService svc) : PageModel
         try
         {
             var (_, hasOverlap) = svc.Update(EventId, Input, EventOwnerType.User, userId.Value);
-            if (hasOverlap)
+            if (hasOverlap && Input.EventType != EventType.Deadline)
             {
                 ShowOverlapWarning = true;
                 return Page();

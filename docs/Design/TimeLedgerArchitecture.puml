@@ -1,0 +1,41 @@
+﻿@startwbs
+'https://plantuml.com/wbs-diagram
+
+* TimeLedger
+
+** Data access layer
+*** Databases
+**** <&globe> Hosted db \n(main)
+**** Local db \n(synced with hosted for single user)
+*** Repositories
+**** <&globe> Online features repositories
+**** Main features repositories \n(works both online/offline)
+
+** Buisness logic layer
+*** Core library
+**** Main parts that works both online/offline
+***** Event services
+***** <&flag> Inbox services\n (some parts, e.g. notifications for events)
+***** <&flag> User account\n (debatable if really needed)
+
+*** <&globe> Online library
+**** <&globe> Parts that only work online\n(until the project ends)
+***** <&globe> User services
+***** <&globe> Group services
+***** <&globe> <&flag> Notifications\n (Invitation, group related)
+
+** Presentation layer
+*** <&globe> Website
+**** <&globe> Main website\n (On luna, work till end of project)
+***** <&globe> Event pages
+***** <&globe> Group pages
+***** <&globe> User accounts
+***** <&flag> Inbox
+
+*** Desktop app
+**** Main desktop app \n(Local, has online features till end of project)
+***** Event pages
+***** <&globe> Group pages
+***** <&globe> User accounts
+***** <&flag> Inbox\n (partially online)
+@endwbs

@@ -103,8 +103,8 @@ GroupInvitationService ..> IGroupInvitationRepository
 GroupInvitationService ..> IUserRepository
 GroupInvitationService ..> IGroupRepository
 GroupInvitationService --> DTOs
-GroupInvitationService --> GroupInvitation
-GroupInvitationRepository --> GroupInvitation
+GroupInvitationService "1" --> "0..*" GroupInvitation
+GroupInvitationRepository "1" --> "0..*" GroupInvitation
 
 User "1" <-- "0..*" GroupInvitation
 Group "1" <-- "0..*" GroupInvitation
