@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.Interfaces.Group;
+using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TimeLedger.Core.DTOs.Inbox;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Inbox;
 

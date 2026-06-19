@@ -9,27 +9,55 @@ hide empty members
 
 title TimeLedger - Event Layered Class Diagram
 
-package "Presentation" #E3F2FD {
+package "Presentation Layer" #E3F2FD {
   class "Event Pages" as EventPages
-  class "Event DTOs" as EventDTOs
+  
+}
+package DTOs{
+    class "Event DTOs" as EventDTOs
+      class SyncResultDto {
+      +PushedCount: int
+      +PulledCount: int
+      +SyncedAt: DateTime
+      +Error: string?
+      }
+}
+package "Business Logic Layer" #E8F5E9 {
+
+package "Core Library" #EDE7F6 {
+
+interface ISettingsStore{
+          +Get<T>(key: string): T?
+          +Set<T>(key: string, value: T): void
+}
+class LocalSettingsStore  implements ISettingsStore{
+      -_filePath: string
 }
 
-package "Service" #E8F5E9 {
-  interface IEventService {
-    + GetAll(ownerType: EventOwnerType, ownerId: int): IEnumerable<EventResponseDto>
-    + GetById(id: int, ownerType: EventOwnerType, ownerId: int): EventResponseDto?
-    + Create(dto: CreateEventDto, ownerType: EventOwnerType, ownerId: int): (EventResponseDto, bool)
-    + Update(id: int, dto: UpdateEventDto, ownerType: EventOwnerType, ownerId: int): (EventResponseDto, bool)
-    + Delete(id: int, ownerType: EventOwnerType, ownerId: int): void
+enum SyncMode {
+Auto
+Manual
+}
+       
+  interface IConnectivityService{
+    +IsAvailable(): bool
   }
-
-  interface IEventOccurrenceService {
-    + GetOccurrencesInRange(EventOwnerType ownerType, int ownerId, DateTime rangeStart, DateTime rangeEnd);: IEnumerable<EventResponseDto>
-    + GetOccurrencesForWeek(ownerType: EventOwnerType, ownerId: int, weekStartDate: DateTime): IEnumerable<EventResponseDto>
+  class ConnectivityService  implements IConnectivityService{
+  -_remoteUrl: string
+  +IsAvailable(): bool
   }
-
-  interface IRecurrenceService {
-    + GenerateOccurrences(eventStart: DateTime, eventEnd: DateTime, recurrence: RecurrenceRuleDto, rangeStart: DateTime, rangeEnd: DateTime): IEnumerable<(DateTime, DateTime)>
+  
+  interface ISyncStateStore{
+            +GetLastSyncedAt(userId: int): DateTime?
+            +SetLastSyncedAt(userId: int, at: DateTime): void
+  }
+  class LocalSyncStateStore  implements ISyncStateStore{
+        -_filePath: string
+  }
+  
+  class RecurrenceService {
+    + GenerateOccurrences(eventStart: DateTime,eventEnd: DateTime, recurrence: RecurrenceRuleDto, rangeStart: DateTime, 
+        rangeEnd: DateTime): IEnumerable<(DateTime, DateTime)>
   }
 
   class EventService {
@@ -41,7 +69,7 @@ package "Service" #E8F5E9 {
     - recurrenceService: IRecurrenceService
   }
 }
-
+}
 package "Core Model" #EDE7F6 {
   class Event {
     + Id: int
@@ -57,6 +85,8 @@ package "Core Model" #EDE7F6 {
     + RecurrenceValue: string?
     + RecurrenceEndTime: DateTime?
     + RecurrenceMaxOccurrences: int?
+    + UpdatedAt: DateTime
+    +IsDeleted: bool
   }
 
   enum EventOwnerType {
@@ -79,8 +109,26 @@ package "Core Model" #EDE7F6 {
     }
 }
 
-package "Repository" #FFF3E0 {
-  interface IEventRepository {
+package "Data Access Layer" #FFF3E0 {
+
+class SyncService{
+-remote: IEventRepository
+-local: IEventRepository
+-syncState: ISyncStateStore
+-settings: ISettingsStore
+
++Sync(userId: int): SyncResult
++SyncOnStartup(userId: int): void
+}
+
+class SyncedEventRepository  implements IEventRepository{
+-remote: IEventRepository
+-local: IEventRepository
+-connectivity: IConnectivityService
+
+}
+
+interface IEventRepository {
     + GetAll(ownerType: EventOwnerType, ownerId: int): IEnumerable<Event>
     + GetById(id: int, ownerType: EventOwnerType, ownerId: int): Event?
     + Add(e: Event): Event
@@ -89,32 +137,45 @@ package "Repository" #FFF3E0 {
     + HasOverlap(startTime: DateTime, endTime: DateTime, excludeId: int?, ownerType: EventOwnerType, ownerId: int): bool
     + GetOverlappingOwnerIds(startTime: DateTime, endTime: DateTime, excludeId: int?, ownerType: EventOwnerType, ownerIds: IEnumerable<int>): IEnumerable<int>
     + GetByType(EventType type, EventOwnerType ownerType, int ownerId) : IEnumerable<Event>
+    +GetUpdatedSince(since: DateTime, ownerType: EventOwnerType, ownerId: int): IEnumerable<Event>
+    +Upsert(e: Event): Event
   }
+  
+  package "Online Repository" #FFCCBC {
   class EventRepository {
     - _connectionString: string
   }
-  class InMemoryEventRepository {
-    - _events: List<Event>
-    - _nextId: int
   }
+  package "Local Repository" #FFE0B2 {
+  class LocalEventRepository {
+    - _filePath: string
+   }
+
 }
 
-EventPages --> IEventService
-EventPages --> IEventOccurrenceService
+EventPages --> EventService
+EventPages --> EventOccurrenceService
 EventPages --> EventDTOs
-IEventService <|.. EventService
-IEventOccurrenceService <|.. EventOccurrenceService
+
 EventService --> EventDTOs
-EventService --> Event
+
+EventService "1" --> "0..*" Event
 EventService ..> IEventRepository
+
 EventOccurrenceService --> EventDTOs
 EventOccurrenceService --> Event
+
+SyncService ..> IEventRepository
+
 EventOccurrenceService ..> IEventRepository
-EventOccurrenceService ..> IRecurrenceService
+EventOccurrenceService ..> RecurrenceService
+
 IEventRepository <|.. EventRepository
-IEventRepository <|.. InMemoryEventRepository
-EventRepository --> Event
-InMemoryEventRepository --> Event
+IEventRepository <|.. LocalEventRepository
+
+EventRepository "1" --> "0..*" Event
+LocalEventRepository "1" --> "0..*" Event
+
 Event "1" ..> "1" EventOwnerType
 Event "1" ..> "1" EventType
 Event "1" ..> "0..1" RecurrenceFrequency

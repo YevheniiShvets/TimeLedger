@@ -1,0 +1,102 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TimeLedger.Desktop.ViewModels"
+             x:Class="TimeLedger.Desktop.Views.EventsTimelineView"
+             x:DataType="vm:MainViewModel"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+    <Grid RowDefinitions="Auto, *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <Border Grid.Row="0" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="25,20">
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="My Events" FontSize="24" FontWeight="Bold" Foreground="#111827"/>
+                    <TextBlock Text="Your schedule, grouped by day." FontSize="13" Foreground="#6B7280" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" IsVisible="{Binding IsOfflineMode}"
+                        Background="#FEF2F2" BorderBrush="#FEE2E2" BorderThickness="1" CornerRadius="15" Padding="12,5">
+                    <TextBlock Text="Offline Local Mode" Foreground="#991B1B" FontSize="12" FontWeight="Bold"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <ScrollViewer x:Name="EventsScrollViewer" Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Timeline}" Margin="25">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding}">
+                            <ContentControl.DataTemplates>
+
+                                <DataTemplate DataType="vm:DayHeaderRowViewModel">
+                                    <TextBlock Text="{Binding DateHeader}" FontSize="15" FontWeight="Bold"
+                                               Foreground="#374151" Margin="0,20,0,5"/>
+                                </DataTemplate>
+
+                                <DataTemplate DataType="vm:EventRowViewModel">
+                                    <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6"
+                                            Margin="0,0,0,10" BoxShadow="0 1 2 0 rgba(0,0,0,0.05)"
+                                            Cursor="Hand">
+                                        <Border.Styles>
+                                            <Style Selector="Border:pointerover">
+                                                <Setter Property="Background" Value="#FAFAFA"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        <Grid ColumnDefinitions="6, *, Auto" DataContext="{Binding Event}">
+
+                                            <Border Grid.Column="0" Background="{Binding TypeBorderColor}" CornerRadius="6,0,0,6"/>
+
+                                            <StackPanel Grid.Column="1" Margin="15,12" Spacing="6">
+                                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="15" Foreground="#111827"/>
+
+                                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding IsDeadline}">
+                                                        <TextBlock Text="📅" FontSize="12"/>
+                                                    </StackPanel>
+
+                                                    <TextBlock Text="{Binding TimeText}" FontSize="13" Foreground="#4B5563"/>
+
+                                                    <Border IsVisible="{Binding !IsDeadline}" Background="#F3F4F6" CornerRadius="12" Padding="8,2">
+                                                        <TextBlock Text="{Binding DurationText}" FontSize="11" Foreground="#4B5563"/>
+                                                    </Border>
+
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding IsRecurrence}">
+                                                        <TextBlock Text="🔄" FontSize="12"/>
+                                                        <TextBlock Text="{Binding RecurrenceRuleText}" FontSize="12" Foreground="#2563EB" FontWeight="Medium"/>
+                                                    </StackPanel>
+
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding HasLocation}">
+                                                        <TextBlock Text="📍" FontSize="12"/>
+                                                        <TextBlock Text="{Binding Location}" FontSize="13" Foreground="#4B5563"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                                <TextBlock Text="{Binding Description}" FontSize="13" Foreground="#6B7280"
+                                                           IsVisible="{Binding HasDescription}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="15"
+                                                        VerticalAlignment="Center" Margin="0,0,20,0">
+                                                <Button Content="Edit" Command="{Binding EditCommand}"
+                                                        Background="Transparent" Foreground="#4B5563" FontSize="13" BorderThickness="0"/>
+                                                <Button Content="Delete" Command="{Binding DeleteCommand}"
+                                                        Background="Transparent" Foreground="#EF4444" FontSize="13" BorderThickness="0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+
+                            </ContentControl.DataTemplates>
+                        </ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

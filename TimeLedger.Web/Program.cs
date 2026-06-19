@@ -1,12 +1,10 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using TimeLedger.Core.Interfaces;
+using BusinessCollaboration.Interfaces.Event;
+using BusinessCollaboration.Interfaces.Group;
+using BusinessCollaboration.Interfaces.User;
+using BusinessCollaboration.Services.Event;
+using BusinessCollaboration.Services.Group;
+using BusinessCollaboration.Services.User;
 using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Interfaces.Users;
-using TimeLedger.Core.Services;
 using TimeLedger.Core.Services.Event;
 using TimeLedger.Infrastructure.Repositories;
 
@@ -16,18 +14,31 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Services for Event Management
+builder.Services.AddScoped<EventService>();
+
+builder.Services.AddScoped<IRecurrenceService, RecurrenceService>();
+builder.Services.AddScoped<EventOccurrenceService>();
+
 builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRemoteEventRepository, EventRepository>();
+
+
+// Services for Group Management
+builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+
+builder.Services.AddScoped<IGroupEventService, GroupEventService>();
+
+builder.Services.AddScoped<IGroupInvitationService, GroupInvitationService>();
 builder.Services.AddScoped<IGroupInvitationRepository, GroupInvitationRepository>();
 
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IGroupEventService, GroupEventService>();
-builder.Services.AddScoped<IRecurrenceService, RecurrenceService>();
-builder.Services.AddScoped<IEventOccurrenceService, EventOccurrenceService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IGroupService, GroupService>();
-builder.Services.AddScoped<IGroupInvitationService, GroupInvitationService>();
+
+// Services for User Management
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
 
 builder.Services.AddSession(options =>
 {

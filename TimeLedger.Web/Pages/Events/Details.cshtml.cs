@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs.Events;
-using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models.Events;
-using TimeLedger.Core.Services;
+using TimeLedger.Core.DTOs.Event;
+using TimeLedger.Core.Models.Event;
+using TimeLedger.Core.Services.Event;
 
 namespace TimeLedger.Pages.Events;
 
-public class DetailsModel(IEventService svc) : PageModel
+public class DetailsModel(EventService svc) : PageModel
 {
     public EventResponseDto Event { get; set; } = null!;
 

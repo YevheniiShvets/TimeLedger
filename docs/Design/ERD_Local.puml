@@ -1,0 +1,33 @@
+﻿@startuml
+
+entity "Events" as Events {
+  * Id : INTEGER <<PK, auto increment>>
+  --
+  Title : TEXT
+  Description : TEXT
+  Location : TEXT
+  AllowOverlap : INTEGER = 0
+  EventType : INTEGER = 1
+  StartTime : TEXT
+  EndTime : TEXT
+  DueAt : TEXT
+  RecurrenceFrequency : INTEGER
+  RecurrenceInterval : INTEGER
+  RecurrenceValue : TEXT
+  RecurrenceEndTime : TEXT
+  RecurrenceMaxOccurrences : INTEGER
+  UpdatedAt : TEXT
+  IsDeleted : INTEGER = 0
+}
+
+entity "Settings" as Settings {
+  * Key : TEXT <<PK>>
+  --
+  Value : TEXT
+}
+
+entity "SyncState" as SyncState {
+  LastSyncedAt : TEXT
+}
+
+@enduml

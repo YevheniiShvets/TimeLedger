@@ -17,8 +17,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TimeLedger.Core\TimeLedger.Core.csproj" />
-      <ProjectReference Include="..\TimeLedger.Infrastructure\TimeLedger.Infrastructure.csproj" />
+      <ProjectReference Include="..\TimeLedger.Business.Core\TimeLedger.Business.Core.csproj" />
+      <ProjectReference Include="..\TimeLedger.Data\TimeLedger.Data.csproj" />
     </ItemGroup>
 
 </Project>

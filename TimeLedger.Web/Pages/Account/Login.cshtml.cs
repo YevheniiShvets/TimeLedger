@@ -1,16 +1,12 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using BusinessCollaboration.DTOs.User;
+using BusinessCollaboration.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Users;
-using TimeLedger.Core.Interfaces.Users;
-using TimeLedger.Core.Services;
 
 
 namespace TimeLedger.Pages.Account;
 
-public class LoginModel(IUserService userService) : PageModel
+public class LoginModel(UserService userService) : PageModel
 {
     [BindProperty]
     public LoginDto Input { get; set; } = new();

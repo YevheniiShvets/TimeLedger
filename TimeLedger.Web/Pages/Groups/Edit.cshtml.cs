@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.DTOs.Group;
+using BusinessCollaboration.Services.Group;
+using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Groups;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
 
-public class Edit(IGroupService groupService) : PageModel
+public class Edit(GroupService groupService) : PageModel
 {
     
     [BindProperty]

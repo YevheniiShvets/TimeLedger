@@ -1,0 +1,145 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TimeLedger.Desktop.ViewModels"
+             x:Class="TimeLedger.Desktop.Views.ActivityFormView"
+             x:DataType="vm:ActivityFormViewModel"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="40" MaxWidth="700" Spacing="20">
+
+            <Button Content="← Back to Calendar" Command="{Binding CancelCommand}"
+                    Background="Transparent" Foreground="#4B5563" BorderThickness="0"
+                    HorizontalAlignment="Left" Padding="0"/>
+
+            <StackPanel Spacing="4">
+                <TextBlock Text="{Binding HeaderTitle}" FontSize="28" FontWeight="Bold" Foreground="#111827"/>
+                <TextBlock Text="{Binding HeaderSubtitle}" FontSize="14" Foreground="#6B7280"/>
+            </StackPanel>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" FontSize="13"
+                       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       TextWrapping="Wrap"/>
+
+            <!-- Title -->
+            <StackPanel Spacing="6">
+                <TextBlock FontSize="13" Foreground="#374151">
+                    <Run Text="Title"/><Run Text=" *" Foreground="#EF4444"/>
+                </TextBlock>
+                <TextBox Text="{Binding Title}" Watermark="e.g., Team Meeting, Study Session"
+                         Height="40" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Description -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Description" FontSize="13" Foreground="#374151"/>
+                <TextBox Text="{Binding Description}" Watermark="Add details about this activity..."
+                         AcceptsReturn="True" TextWrapping="Wrap" Height="100" VerticalContentAlignment="Top"/>
+            </StackPanel>
+
+            <!-- Location -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Location" FontSize="13" Foreground="#374151"/>
+                <TextBox Text="{Binding Location}" Watermark="e.g., Room 201, Online"
+                         Height="40" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Event Type -->
+            <StackPanel Spacing="6">
+                <TextBlock FontSize="13" Foreground="#374151">
+                    <Run Text="Event Type"/><Run Text=" *" Foreground="#EF4444"/>
+                </TextBlock>
+                <ComboBox ItemsSource="{Binding EventTypeOptions}" SelectedItem="{Binding EventType}"
+                          HorizontalAlignment="Stretch" Height="40"/>
+            </StackPanel>
+
+            <!-- Start/End Time (hidden for Deadline) -->
+            <Grid ColumnDefinitions="*, 20, *" IsVisible="{Binding ShowStartEnd}">
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock FontSize="13" Foreground="#374151">
+                        <Run Text="Start Time"/><Run Text=" *" Foreground="#EF4444"/>
+                    </TextBlock>
+                    <DatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch"/>
+                    <TimePicker SelectedTime="{Binding StartTimeOfDay}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="6">
+                    <TextBlock FontSize="13" Foreground="#374151">
+                        <Run Text="End Time"/><Run Text=" *" Foreground="#EF4444"/>
+                    </TextBlock>
+                    <DatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch"/>
+                    <TimePicker SelectedTime="{Binding EndTimeOfDay}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Due At (only for Deadline) -->
+            <StackPanel Spacing="6" IsVisible="{Binding IsDeadline}">
+                <TextBlock FontSize="13" Foreground="#374151">
+                    <Run Text="Due Date"/><Run Text=" *" Foreground="#EF4444"/>
+                </TextBlock>
+                <DatePicker SelectedDate="{Binding DueAtDate}" HorizontalAlignment="Stretch"/>
+                <TimePicker SelectedTime="{Binding DueAtTimeOfDay}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <!-- Allow Overlap -->
+            <CheckBox Content="Allow overlapping events" IsChecked="{Binding AllowOverlap}"
+                      IsVisible="{Binding !IsDeadline}"/>
+
+            <!-- Recurrence Settings (only for Recurrence type) -->
+            <StackPanel Spacing="20" IsVisible="{Binding IsRecurrence}">
+                <TextBlock Text="Recurrence Settings" FontSize="22" FontWeight="Bold"
+                           Foreground="#111827" Margin="0,10,0,0"/>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Frequency" FontSize="13" Foreground="#374151"/>
+                    <ComboBox ItemsSource="{Binding RecurrenceFrequencyOptions}"
+                              SelectedItem="{Binding RecurrenceFrequency}"
+                              HorizontalAlignment="Stretch" Height="40"/>
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Interval (every N)" FontSize="13" Foreground="#374151"/>
+                    <NumericUpDown Value="{Binding RecurrenceInterval}" Minimum="1"
+                                   HorizontalAlignment="Stretch" Height="40"/>
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Pattern (weekdays as 0-6 comma-separated, or day-of-month)"
+                               FontSize="13" Foreground="#374151"/>
+                    <TextBox Text="{Binding RecurrenceValue}"
+                             Watermark="e.g., 1,3 for Mon/Wed, or 15 for day-of-month"
+                             Height="40" VerticalContentAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Recurrence End Date -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="End Date (Optional)" FontSize="13" Foreground="#374151"/>
+                    <DatePicker SelectedDate="{Binding RecurrenceEndDate}" HorizontalAlignment="Stretch"/>
+                    <TimePicker SelectedTime="{Binding RecurrenceEndTimeOfDay}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Max Occurrences (Optional)" FontSize="13" Foreground="#374151"/>
+                    <NumericUpDown Value="{Binding RecurrenceMaxOccurrences}" Minimum="1"
+                                   HorizontalAlignment="Stretch" Height="40"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Actions -->
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,10,0,0">
+                <Button Content="{Binding SubmitButtonText}" Command="{Binding SubmitCommand}"
+                        Background="#111827" Foreground="White" Height="40" CornerRadius="6"
+                        Padding="20,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                        FontWeight="SemiBold"/>
+                <Button Content="Delete" Command="{Binding DeleteCommand}" IsVisible="{Binding IsEditMode}"
+                        Background="White" Foreground="#EF4444" BorderBrush="#FCA5A5" BorderThickness="1"
+                        Height="40" CornerRadius="6" Padding="20,0"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button Content="Cancel" Command="{Binding CancelCommand}"
+                        Background="White" Foreground="#111827" BorderBrush="#D1D5DB" BorderThickness="1"
+                        Height="40" CornerRadius="6" Padding="20,0"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

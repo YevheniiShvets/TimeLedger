@@ -1,0 +1,82 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TimeLedger.Desktop.ViewModels"
+             x:Class="TimeLedger.Desktop.Views.LoginView"
+             x:DataType="vm:LoginViewModel"
+             Background="#F9FAFB">
+
+    <Grid ColumnDefinitions="*, 450, *">
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="20" Margin="20">
+
+            <!-- App Identity -->
+            <StackPanel HorizontalAlignment="Center" Spacing="5" Margin="0,0,0,20">
+                <TextBlock Text="TimeLedger" FontSize="28" FontWeight="Bold" Foreground="#111827" HorizontalAlignment="Center"/>
+                <TextBlock Text="Manage your schedule" FontSize="14" Foreground="#6B7280" HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <Border Background="White" CornerRadius="8" BoxShadow="0 4 6 -1 rgba(0,0,0,0.1)" Padding="30">
+                <StackPanel Spacing="15">
+
+                    <!-- Dynamic Header -->
+                    <TextBlock Text="{Binding HeaderText}"
+                               FontSize="20" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,0,10"/>
+
+                    <!-- Name - only visible when registering -->
+                    <StackPanel Spacing="5" IsVisible="{Binding IsRegistering}">
+                        <TextBlock Text="Name *" FontSize="12" FontWeight="SemiBold" Foreground="#374151"/>
+                        <TextBox Text="{Binding Name}" Watermark="Your name" Height="40" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Email -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Email *" FontSize="12" FontWeight="SemiBold" Foreground="#374151"/>
+                        <TextBox Text="{Binding Email}" Watermark="you@example.com" Height="40" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Password -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Password *" FontSize="12" FontWeight="SemiBold" Foreground="#374151"/>
+                        <TextBox Text="{Binding Password}" Watermark="Enter password" PasswordChar="*" Height="40" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Confirm Password - only visible when registering -->
+                    <StackPanel Spacing="5" IsVisible="{Binding IsRegistering}">
+                        <TextBlock Text="Confirm Password *" FontSize="12" FontWeight="SemiBold" Foreground="#374151"/>
+                        <TextBox Text="{Binding ConfirmPassword}" Watermark="Repeat password" PasswordChar="*" Height="40" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Error Output -->
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#EF4444" FontSize="13"
+                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               TextWrapping="Wrap"/>
+
+                    <!-- Actions -->
+                    <Button Content="{Binding SubmitButtonText}"
+                            Command="{Binding ExecuteSubmitCommand}"
+                            Background="#111827" Foreground="White" Height="40"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                            FontWeight="SemiBold" CornerRadius="6" Margin="0,10,0,0"/>
+
+                    <Button Content="{Binding ToggleText}"
+                            Command="{Binding ToggleModeCommand}"
+                            Background="Transparent" Foreground="#4B5563" BorderThickness="0"
+                            HorizontalAlignment="Center" FontSize="13"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Offline entry section -->
+            <Border Background="#E5E7EB" CornerRadius="8" Padding="15">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="No internet connection or server account?" FontSize="13" Foreground="#374151"
+                               HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <Button Content="Continue Offline Mode"
+                            Command="{Binding ContinueOfflineCommand}"
+                            Background="White" Foreground="#111827" BorderBrush="#D1D5DB" BorderThickness="1"
+                            Height="38" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center" FontWeight="SemiBold" CornerRadius="6"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

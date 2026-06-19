@@ -1,0 +1,86 @@
+﻿@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #4A90D9
+  ArrowColor #4A90D9
+  ActorBorderColor #2C5F8A
+  ActorBackgroundColor #D6E8F7
+}
+
+actor Guest
+actor User
+actor "Group Owner" as Owner
+actor "Group Member" as Member
+
+User <|-- Owner
+User <|-- Member
+Guest -[hidden]d-> User
+
+rectangle "Use cases"{
+
+rectangle "Event Crud Operations" as ECO {
+  usecase "UC-1\nCreate a New Event" as UC1
+  usecase "UC-2\nView Events in\nDay-Based Calendar View" as UC2
+  usecase "UC-3\nEdit an Existing Event" as UC3
+  usecase "UC-4\nDelete an Event" as UC4
+}
+
+rectangle "Invitation Inbox" as II {
+  usecase "UC-13\nAccept a Group\nInvitation" as UC14
+  usecase "UC-14\nDecline a Group\nInvitation" as UC15
+}
+rectangle "Account Management" as AM {
+  usecase "UC-5\nRegister an Account" as UC5
+  usecase "UC-6\nLog In" as UC6
+  usecase "UC-7\nView Signed-In Account\nin Sidebar" as UC7
+  usecase "UC-8\nLog Out" as UC8
+  usecase "UC-9\nView and Edit\nAccount Information" as UC9
+}
+
+rectangle "Group Management" as GM {
+  usecase "UC-10\nCreate a Group" as UC10
+  usecase "UC-11\nManage\nGroup Members" as UC11
+  usecase "UC-12\nView Groups" as UC12
+}
+
+
+rectangle "Group Events" as GE {
+  usecase "UC-15\nCreate a\nGroup Event" as UC16
+  usecase "UC-16\nView Group\nEvents" as UC17
+}
+}
+
+
+' Event CRUD
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+UC16 .> UC1 : <<extend>>
+
+' Account Management
+Guest --> UC5
+Guest --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+
+' Group Management
+Owner --> UC10
+Owner --> UC11
+User --> UC12
+
+
+' Invitation Inbox
+User --> UC14
+User --> UC15
+
+' Group Events
+Owner --> UC16
+Member --> UC17
+Owner --> UC17
+
+@enduml

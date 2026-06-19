@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.DTOs.Group;
+using BusinessCollaboration.Interfaces.Group;
+using BusinessCollaboration.Services.Group;
+using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Groups;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Services;
 
 namespace TimeLedger.Pages.Groups;
 
-public class ManageModel(IGroupService groupService, IGroupInvitationService invitationService) : PageModel
+public class ManageModel(GroupService groupService, IGroupInvitationService invitationService) : PageModel
 {
     [TempData]
     public string? StatusMessage { get; set; }
