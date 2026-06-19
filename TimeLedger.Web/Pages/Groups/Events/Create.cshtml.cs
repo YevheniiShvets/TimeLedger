@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.Interfaces.Event;
+using BusinessCollaboration.Services.Group;
+using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs.Events;
-using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Models.Events;
-using TimeLedger.Core.Services;
+using TimeLedger.Core.DTOs.Event;
+using TimeLedger.Core.Models.Event;
 
 namespace TimeLedger.Pages.Groups.Events;
 
-public class CreateModel(IGroupEventService groupEventService, IGroupService groupService) : PageModel
+public class CreateModel(IGroupEventService groupEventService, GroupService groupService) : PageModel
 {
     [BindProperty]
     public CreateEventDto Input { get; set; } = new();

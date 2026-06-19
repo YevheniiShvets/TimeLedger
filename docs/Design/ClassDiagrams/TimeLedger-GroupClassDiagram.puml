@@ -15,19 +15,17 @@ package "Presentation" #E3F2FD {
 }
 
 package "Service" #E8F5E9 {
-  interface IGroupService {
-	+ GetAll(actorUserId: int): IEnumerable<GroupInfoDto>
-	+ GetById(groupId: int, userId: int): GroupInfoDto
-	+ Create(dto: CreateGroupDto, userId: int): GroupInfoDto
-	+ Update(groupId: int, dto: UpdateGroupDto, userId: int): GroupInfoDto
-	+ Delete(id: int, userId: int): void
-	+ RemoveMember(groupId: int, userId: int, actorUserId: int): void
-	+ GetMembers(groupId: int, userId: int): IEnumerable<AccountInfoDto>
-  }
 
   class GroupService {
 	- groupRepository: IGroupRepository
 	- userRepository: IUserRepository
+	+ GetAll(actorUserId: int): IEnumerable<GroupInfoDto>
+    	+ GetById(groupId: int, userId: int): GroupInfoDto
+    	+ Create(dto: CreateGroupDto, userId: int): GroupInfoDto
+    	+ Update(groupId: int, dto: UpdateGroupDto, userId: int): GroupInfoDto
+    	+ Delete(id: int, userId: int): void
+    	+ RemoveMember(groupId: int, userId: int, actorUserId: int): void
+    	+ GetMembers(groupId: int, userId: int): IEnumerable<AccountInfoDto>
   }
 
   class AuthSession {
@@ -88,11 +86,10 @@ package "Repository" #FFF3E0 {
   }
 }
 
-GroupPages --> IGroupService
+GroupPages --> GroupService
 GroupPages ..> AuthSession
 GroupPages --> GroupDTOs
 GroupDTOs --> DTOs
-IGroupService <|.. GroupService
 GroupService --> DTOs
 GroupService "1" --> "0..*" Group
 GroupService "1" --> "0..*" User

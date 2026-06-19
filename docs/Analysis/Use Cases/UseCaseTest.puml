@@ -1,0 +1,128 @@
+﻿@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #4A90D9
+  ArrowColor #4A90D9
+  ActorBorderColor #2C5F8A
+  ActorBackgroundColor #D6E8F7
+}
+
+' ==============================
+' 1. ACTORS (Rank 1)
+' ==============================
+actor "Offline Desktop User" as DesktopUser
+actor "Online Desktop User" as OnlineDesktopUser
+actor Guest
+actor User
+actor "Group Member" as Member
+actor "Group Owner" as Owner
+
+' Clean actor hierarchy
+OnlineDesktopUser --|> DesktopUser
+OnlineDesktopUser --|> User
+Member --|> User
+Owner --|> Member
+
+' Enforce a neat top-to-bottom actor column layout
+DesktopUser -[hidden]down-> OnlineDesktopUser
+OnlineDesktopUser -[hidden]down-> Guest
+Guest -[hidden]down-> User
+User -[hidden]down-> Member
+Member -[hidden]down-> Owner
+
+rectangle "Use cases" {
+
+  ' ==============================
+  ' 2. DESKTOP PACKAGE (Rank 2)
+  ' ==============================
+  rectangle "Desktop" as Desktop {
+    usecase "UC-18\nSync events on desktop startup" as UC18
+    usecase "UC-19\nSync events manually" as UC19
+    usecase "UC-20\nUse online features on desktop" as UC20
+    usecase "UC-21\nUse offline features on desktop" as UC21
+  }
+
+  ' ==============================
+  ' 3. CORE PACKAGES (Rank 3)
+  ' ==============================
+  rectangle "Online Features" as Online{
+  rectangle "Account Management" as AM {
+    usecase "UC-5\nRegister an Account" as UC5
+    usecase "UC-6\nLog In" as UC6
+    usecase "UC-7\nView Signed-In Account\nin Sidebar" as UC7
+    usecase "UC-8\nLog Out" as UC8
+    usecase "UC-9\nView and Edit\nAccount Information" as UC9
+  }
+
+  rectangle "Invitation Inbox" as II {
+    usecase "UC-14\nAccept a Group\nInvitation" as UC14
+    usecase "UC-15\nDecline a Group\nInvitation" as UC15
+  }
+  rectangle "Group Management" as GM {
+      usecase "UC-10\nCreate a Group" as UC10
+      usecase "UC-11\nInvite user to group" as UC11
+      usecase "UC-12\nRemove member from group" as UC12
+      usecase "UC-13\nView Groups" as UC13
+    }
+  
+    rectangle "Group Events" as GE {
+      usecase "UC-16\nCreate a\nGroup Event" as UC16
+      usecase "UC-17\nView Group\nEvents" as UC17
+    }
+}
+  rectangle "Event Crud Operations" as ECO {
+    usecase "UC-1\nCreate a New Event" as UC1
+    usecase "UC-2\nView Events in\nDay-Based Calendar View" as UC2
+    usecase "UC-3\nEdit an Existing Event" as UC3
+    usecase "UC-4\nDelete an Event" as UC4
+  }
+
+  
+}
+
+' Enforce vertical logical ordering of Core Packages to minimize crossing internally
+AM -[hidden]down-> II
+II -[hidden]down-> ECO
+ECO -[hidden]down-> GM
+GM -[hidden]down-> GE
+
+' ==============================
+' RELATIONSHIPS
+' ==============================
+
+' Desktop actor links (Rank 1 to Rank 2 using standard '-->')
+DesktopUser --> UC21
+OnlineDesktopUser --> UC18
+OnlineDesktopUser --> UC19
+OnlineDesktopUser --> UC20
+
+' Include relationships (Rank 2 to Rank 3: perfectly horizontal left-to-right flow)
+UC21 .left.> ECO : <<include>>
+UC20 .left.> Online : <<include>>
+
+' Inter-package extend
+UC16 .left.> UC1 : <<extend>>
+
+' Core package links (Rank 1 to Rank 3 using '--->' to skip Rank 2)
+Guest ---> UC5
+Guest ---> UC6
+
+User ---> UC7
+User ---> UC8
+User ---> UC9
+User ---> UC14
+User ---> UC15
+User ---> ECO
+User ---> UC13
+
+Owner ---> UC10
+Owner ---> UC11
+Owner ---> UC12
+Owner ---> UC16
+
+Member ---> UC17
+
+@enduml

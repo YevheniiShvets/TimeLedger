@@ -1,12 +1,12 @@
 ﻿@page
+@using TimeLedger.Core.Models.Event
 @model TimeLedger.Pages.Events.CreateModel
-@using TimeLedger.Core.Models.Events
 @{
     ViewData["Title"] = "Create Event";
 }
 
 <div class="form-container">
-    <a href="" class="form-back">← Back to Calendar</a>
+    <a href="/Events" class="form-back">← Back to Calendar</a>
     <h1 class="form-title">Add Activity</h1>
     <p class="form-subtitle">Create a new activity in your schedule</p>
 
@@ -90,7 +90,7 @@
 
         <div class="btn-row">
             <button type="submit" class="btn-primary">Add Activity</button>
-            <a href="" class="btn-secondary">Cancel</a>
+            <a href="/Events" class="btn-secondary">Cancel</a>
         </div>
     </form>
 </div>

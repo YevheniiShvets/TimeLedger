@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.Interfaces.Event;
+using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Events;
-using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models.Events;
-using TimeLedger.Core.Services;
+using TimeLedger.Core.DTOs.Event;
+using TimeLedger.Core.Models.Event;
 
 namespace TimeLedger.Pages.Groups.Events;
 

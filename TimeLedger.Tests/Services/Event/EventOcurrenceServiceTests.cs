@@ -1,9 +1,9 @@
 ﻿using NSubstitute;
-using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.DTOs.Event;
 using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models.Events;
+using TimeLedger.Core.Models.Event;
 using TimeLedger.Core.Services.Event;
-using EventModel = TimeLedger.Core.Models.Events.Event;
+using EventModel = TimeLedger.Core.Models.Event.Event;
 
 namespace TimeLedger.Tests.Services.Event;
 
@@ -12,7 +12,7 @@ public class EventOcurrenceServiceTests
 {
     private IEventRepository _eventRepository = null!;
     private IRecurrenceService _recurrenceService = null!;
-    private IEventOccurrenceService _service = null!;
+    private EventOccurrenceService _service = null!;
 
     private const EventOwnerType OwnerType = EventOwnerType.User;
     private const int OwnerId = 42;

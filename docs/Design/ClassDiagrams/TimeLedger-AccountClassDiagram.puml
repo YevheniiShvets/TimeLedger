@@ -15,16 +15,14 @@ package "Presentation" #E3F2FD {
 }
 
 package "Service" #E8F5E9 {
-  interface IUserService {
-	+ Register(dto: RegisterDto): AccountInfoDto
-	+ Login(dto: LoginDto): AccountInfoDto
-	+ GetById(id: int): AccountInfoDto
-	+ Update(id: int, dto: UpdateAccountDto): AccountInfoDto
-	+ Delete(id: int): void
-  }
 
   class UserService {
 	- userRepository: IUserRepository
+	+ Register(dto: RegisterDto): AccountInfoDto
+    	+ Login(dto: LoginDto): AccountInfoDto
+    	+ GetById(id: int): AccountInfoDto
+    	+ Update(id: int, dto: UpdateAccountDto): AccountInfoDto
+    	+ Delete(id: int): void
   }
 
   class AuthSession {
@@ -67,11 +65,10 @@ package "Repository" #FFF3E0 {
   }
 }
 
-AccountPages --> IUserService
+AccountPages --> UserService
 AccountPages ..> AuthSession
 AccountPages --> AccountDTOs
 AccountDTOs --> DTOs
-IUserService <|.. UserService
 UserService --> DTOs
 UserService "1" --> "0..*" User
 UserService ..> IUserRepository

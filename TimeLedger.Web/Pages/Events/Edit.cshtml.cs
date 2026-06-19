@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessCollaboration.Services.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TimeLedger.Core.DTOs;
-using TimeLedger.Core.DTOs.Events;
-using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models;
-using TimeLedger.Core.Models.Events;
-using TimeLedger.Core.Services;
+using TimeLedger.Core.DTOs.Event;
+using TimeLedger.Core.Models.Event;
+using TimeLedger.Core.Services.Event;
 
 namespace TimeLedger.Pages.Events;
 
-public class EditModel(IEventService svc) : PageModel
+public class EditModel(EventService svc) : PageModel
 {
     [BindProperty]
     public UpdateEventDto Input { get; set; } = new();

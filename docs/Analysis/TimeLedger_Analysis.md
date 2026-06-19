@@ -25,9 +25,12 @@ The solution currently focuses on:
 
 ### 3.1 Solution structure
 
-- `TimeLedger.Web` — Razor Pages UI and application startup
-- `TimeLedger.Core` — DTOs, domain models, interfaces, and services
-- `TimeLedger.Infrastructure` — SQL repositories
+- `TimeLedger.Web` — Razor Pages web UI
+- `TimeLedger.Desktop` — Avalonia UI for offline use
+- `TimeLedger.Business.Core` — DTOs, domain models, interfaces, and services for offline/online logic
+- `TimeLedger.Business.Collaboration` — Online services
+- `TimeLedger.Data` — Repository implementations for SQL Server
+- `TimeLedger.Data.Local` — Repository implementations for local SQLite
 - `TimeLedger.Tests` — NUnit test project scaffold
 
 ### 3.2 Technology stack
@@ -35,8 +38,10 @@ The solution currently focuses on:
 | Area | Current implementation           |
 |---|----------------------------------|
 | Web UI | ASP.NET Core Razor Pages         |
+| Desktop UI | Avalonia UI                      |
 | Target framework | `.NET 10.0`                      |
 | Persistence | SQL Server via `Microsoft.Data.SqlClient` |
+| Local persistence | SQLite via `Microsoft.Data.Sqlite` |
 | Password hashing | `BCrypt`                         |
 | State management | ASP.NET Core session             |
 | Validation | Data annotations + service validation |
@@ -69,13 +74,11 @@ The solution currently focuses on:
 - Group event overlap checks include existing group events and member personal events (not includes group events from other groups)
 - Event types support three modes: `OneTime`, `Recurrence`, and `Deadline`
 
-
-
-### 3.4 Planned items (Iteration 4+)
-
-- Calendar view improvements with richer day/week aggregation
-- Advanced notification types and inbox filtering
-- Tag support for events
+#### Iteration 4
+- Event notifications
+- Week events view
+- Desktop app with offline support
+- Polishment of UI and UX
 
 ## 4. Problem statement
 
@@ -90,31 +93,38 @@ The live implementation now includes account management, authenticated event sch
 | Developer | Builder and Maintainer | Clean architecture, testable code, clear requirements                      |
 | Academic Assessor | Evaluator | Demonstrated iterative process, clean layered design, proper documentation |
 
-## 6. Functional requirements for iteration 3
+## 6. Functional requirements
 
-### Implemented in the current solution
 
-| ID    | Requirement | Status      |
-|-------|-|-------------|
-| FR-1  | The system shall allow a user to create differently-typed events with a title, optional description and other type-related fields | Implemented |
-| FR-2  | The system shall validate that the start time is strictly before the end time | Implemented |
-| FR-3  | The system shall warn user when creating or updating events that overlap with existing events | Implemented |
-| FR-4  | The system shall allow users to view their events in a day-based calendar view | Implemented |
-| FR-5  | The system shall allow users to edit and delete their events | Implemented |
-| FR-6  | The system shall persist event data across application restarts | Implemented |
-| FR-7  | The system shall display descriptive inline error messages when validation fails | Implemented |
-| FR-8  | The system shall display the calculated duration of each event in the event list | Implemented |
-| FR-9  | Register users with email and password | Implemented |
-| FR-10 | Authenticate users via session auth | Implemented |
-| FR-11 | Associate events with the user who created them | Implemented |
-| FR-12 | System should prevent users from accessing pages they do not have access to| Implemented |
-| FR-13 | Allow users to create groups and become group owners | Implemented |
-| FR-14 | Allow group owners to manage group members | Implemented |
-| FR-15 | Restrict group access to owners and members | Implemented |
-| FR-16 | Allow users to log out | Implemented |
-| FR-17 | Allow users to view and edit account information | Implemented |
-| FR-18 | Allow group owners to invite users to groups by email | Implemented |
-| FR-19 | Show group invitations in inbox and allow accept/decline actions | Implemented |
+| ID    | Requirement                                                                                                                                     | Scope          | Status      |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------|-------------|
+| FR-1  | The system shall allow a user to create differently-typed events with a title, optional description and other type-related fields               | Both | Implemented |
+| FR-2  | The system shall validate that the start time is strictly before the end time                                                                   | Both           | Implemented |
+| FR-3  | The system shall warn user when creating or updating events that overlap with existing events                                                   | Both           | Implemented |
+| FR-4  | The system shall allow users to view their events in a day-based calendar view                                                                  | Both           | Implemented |
+| FR-5  | The system shall allow users to edit and delete their events                                                                                    | Both           | Implemented |
+| FR-6  | The system shall persist event data across application restarts                                                                                 | Both           | Implemented |
+| FR-7  | The system shall display descriptive inline error messages when validation fails                                                                | Both           | Implemented |
+| FR-8  | The system shall display the calculated duration of each event in the event list                                                                | Both           | Implemented |
+| FR-9  | Register users with email and password                                                                                                          | Web            | Implemented |
+| FR-10 | Authenticate users via session auth                                                                                                             | Web            | Implemented |
+| FR-11 | Associate events with the user who created them                                                                                                 | Both           | Implemented |
+| FR-12 | System should prevent users from accessing pages or data they do not have access to                                                             | Both           | Implemented |
+| FR-13 | Allow users to create groups and become group owners                                                                                            | Both (online)  | Implemented |
+| FR-14 | Allow group owners to manage group members                                                                                                      | Both (online)  | Implemented |
+| FR-15 | Restrict group access to owners and members                                                                                                     | Both (online)  | Implemented |
+| FR-16 | Allow users to log out and clear session                                                                                                        | Web            | Implemented |
+| FR-17 | Allow users to view and edit account information                                                                                                | Both (online)  | Implemented |
+| FR-18 | Allow group owners to invite users to groups by email                                                                                           | Both (online)  | Implemented |
+| FR-19 | Show group invitations in inbox and allow accept/decline actions                                                                                | Both (online)  | Implemented |
+| FR-20 | The system shall provide a desktop application with full event management capabilities                                                          | Desktop        | Planned     |
+| FR-21 | The desktop application shall maintain a local SQLite database as its primary data store                                                        | Desktop        | Planned     |
+| FR-22 | The desktop application shall sync with the hosted database on startup, pulling only changes since last sync                                    | Desktop        | Planned     |
+| FR-23 | The desktop application shall support offline access, allowing users to view and manage their events without an active internet connection      | Desktop        | Planned     |
+| FR-24 | The desktop application shall write all changes to both local and hosted databases while the server is available                                | Desktop     | Planned     |
+| FR-25 | The desktop application shall allow user to turn off autosync and manually trigger sync with the hosted database                                                                 | Desktop     | Planned     |
+| FR-26 | The desktop application shall fall back to local data when the hosted server is unreachable                                                     | Desktop        | Planned     |
+| FR-27 | Online features (groups, invitations) shall be available on the desktop application connected to internet until the hosted server is taken down | Desktop (online) | Planned |
 
 
 
@@ -129,25 +139,29 @@ The live implementation now includes account management, authenticated event sch
 
 Full use case details are documented in the separate documents for use cases per iteration.
 
-| Use Case | Description                             | Related FRs       |
-|----------|-----------------------------------------|-------------------|
-| UC-1     | Create a new event                      | FR-1, FR-2, FR-7  |
-| UC-2     | View events in day-based calendar view  | FR-4              |
-| UC-3     | Edit an existing event                  | FR-5, FR-2, FR-3, FR-7 |
-| UC-4     | Delete an event                         | FR-5              |
-| UC-5     | Register an account                     | FR-9                 |
-| UC-6     | Log in                                  | FR-10                |
-| UC-7     | View signed-in account in sidebar       | FR-10                |
-| UC-8     | Log out                                 | FR-16                |
-| UC-9     | View and edit account information       | FR-17                |
-| UC-10    | Create a group                          | FR-13                |
-| UC-11    | Manage group members                    | FR-14                |
-| UC-12    | View groups                             | FR-15                |
-| UC-13    | Accept a group invitation               | FR-19                            |
-| UC-14    | Decline a group invitation              | FR-19                            |
-| UC-15    | Create a group event                    | Implemented feature (group events) |
-| UC-16    | View group events                       | Implemented feature (group events) |
-
+| Use Case | Description                              | Scope          | Related FRs            |
+|----------|------------------------------------------|----------------|------------------------|
+| UC-1     | Create a new event                      | Both              | FR-1, FR-2, FR-3, FR-7 |
+| UC-2     | View events in day-based calendar view  | Both              | FR-4, FR-8             |
+| UC-3     | Edit an existing event                  | Both              | FR-2, FR-3, FR-5, FR-7 |
+| UC-4     | Delete an event                         | Both              | FR-5                   |
+| UC-5     | Register an account                     | Web               | FR-9                   |
+| UC-6     | Log in                                  | Web               | FR-10                  |
+| UC-7     | View signed-in account in sidebar       | Web               | FR-10                  |
+| UC-8     | Log out                                 | Web               | FR-16                  |
+| UC-9     | View and edit account information       | Both (online)     | FR-17                  |
+| UC-10    | Create a group                          | Both (online)     | FR-13                  |
+| UC-11    | Invite user to group                    | Both (online)     | FR-14, FR-18           |
+| UC-12    | Remove member from group                | Both (online)     | FR-14                  |
+| UC-13    | View groups                             | Both (online)     | FR-15                  |
+| UC-14    | Accept a group invitation               | Both (online)     | FR-19                  |
+| UC-15    | Decline a group invitation              | Both (online)     | FR-19                  |
+| UC-16    | Create a group event                    | Both (online)     | FR-22                  |
+| UC-17    | View group events                       | Both (online)     | FR-15                  |
+| UC-18    | Sync events on desktop startup          | Desktop           | FR-22                  |
+| UC-19    | Sync events manually                    | Both              | FR-25                  |
+| UC-20    | Use online features on desktop          | Desktop (online)  | FR-27                  |
+| UC-21    | Use offline features on desktop         | Desktop (offline) | FR-27                  |
 
 ## 9. Summary
 

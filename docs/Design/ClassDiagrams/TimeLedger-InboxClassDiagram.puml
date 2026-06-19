@@ -14,24 +14,26 @@ package "Presentation" #E3F2FD {
   class "Inbox DTOs" as InboxDTOs
 }
 
-package "Service" #E8F5E9 {
-  interface IGroupInvitationService {
-	+ Invite(groupId: int, dto: CreateGroupInvitationDto, userId: int): InboxItemDto
-	+ GetPendingInboxForUser(userId: int): IEnumerable<InboxItemDto>
-	+ AcceptInvitation(invitationId: int, userId: int): void
-	+ DeclineInvitation(invitationId: int, userId: int): void
-	+ GetInvitation(invitationId: int, userId: int): InboxItemDto
-	+ DeleteInvitation(invitationId: int, userId: int): void
-  }
+package "Business Logic Layer" #E8F5E9 {
+package "Core Library" #EDE7F6 {
+class EventNotificationService(WIP) {}
+}
+package "Collaboration Library" #EDE7F6{
 
   class GroupInvitationService {
 	- invitationRepo: IGroupInvitationRepository
 	- userRepo: IUserRepository
 	- groupRepo: IGroupRepository
+	+ Invite(groupId: int, dto: CreateGroupInvitationDto, userId: int): InboxItemDto
+    	+ GetPendingInboxForUser(userId: int): IEnumerable<InboxItemDto>
+    	+ AcceptInvitation(invitationId: int, userId: int): void
+    	+ DeclineInvitation(invitationId: int, userId: int): void
+    	+ GetInvitation(invitationId: int, userId: int): InboxItemDto
+    	+ DeleteInvitation(invitationId: int, userId: int): void
 
   }
 }
-
+}
 package "Core Model" #EDE7F6 {
   class GroupInvitation {
 	+ Id: int
@@ -94,10 +96,10 @@ package "Repository" #FFF3E0 {
   }
 }
 
-InboxPage --> IGroupInvitationService
+InboxPage --> GroupInvitationService
 InboxPage --> InboxDTOs
 InboxDTOs --> DTOs
-IGroupInvitationService <|.. GroupInvitationService
+
 IGroupInvitationRepository <|.. GroupInvitationRepository
 GroupInvitationService ..> IGroupInvitationRepository
 GroupInvitationService ..> IUserRepository

@@ -1,0 +1,39 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TimeLedger.Desktop.ViewModels"
+             x:Class="TimeLedger.Desktop.Views.DeleteActivityView"
+             x:DataType="vm:DeleteActivityViewModel"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+    <StackPanel Margin="40" MaxWidth="700" Spacing="20">
+
+        <Button Content="← Back to Calendar" Command="{Binding CancelCommand}"
+                Background="Transparent" Foreground="#4B5563" BorderThickness="0"
+                HorizontalAlignment="Left" Padding="0"/>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Delete Activity" FontSize="28" FontWeight="Bold" Foreground="#111827"/>
+            <TextBlock Text="This action cannot be undone" FontSize="14" Foreground="#6B7280"/>
+        </StackPanel>
+
+        <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="25">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Are you sure you want to delete this event?" FontSize="14" Foreground="#374151"/>
+                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16" Foreground="#111827"/>
+                <TextBlock Text="{Binding TimeRangeText}" FontSize="14" Foreground="#4B5563"/>
+                <TextBlock Text="{Binding Location}" IsVisible="{Binding HasLocation}" FontSize="14" Foreground="#4B5563"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="Delete" Command="{Binding ConfirmDeleteCommand}"
+                    Background="White" Foreground="#EF4444" BorderBrush="#FCA5A5" BorderThickness="1"
+                    Height="38" CornerRadius="6" Padding="20,0"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="SemiBold"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}"
+                    Background="White" Foreground="#111827" BorderBrush="#D1D5DB" BorderThickness="1"
+                    Height="38" CornerRadius="6" Padding="20,0"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

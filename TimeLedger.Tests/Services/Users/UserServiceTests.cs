@@ -1,9 +1,10 @@
-﻿using NSubstitute;
+﻿using BusinessCollaboration.DTOs.User;
+using BusinessCollaboration.Interfaces.User;
+using BusinessCollaboration.Models.User;
+using BusinessCollaboration.Services.User;
+using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using TimeLedger.Core.DTOs.Users;
-using TimeLedger.Core.Interfaces.Users;
-using TimeLedger.Core.Models.Users;
-using TimeLedger.Core.Services;
+
 
 namespace TimeLedger.Tests.Services.Users;
 
@@ -11,7 +12,7 @@ namespace TimeLedger.Tests.Services.Users;
 public class UserServiceTests
 {
     private IUserRepository _userRepository = null!;
-    private IUserService _userService = null!;
+    private UserService _userService = null!;
 
     private const int UserId = 12;
     private const string ValidPassword = "SecurePass123!";

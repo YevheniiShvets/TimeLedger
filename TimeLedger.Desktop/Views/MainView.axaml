@@ -1,0 +1,84 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TimeLedger.Desktop.ViewModels"
+             xmlns:views="using:TimeLedger.Desktop.Views"
+             x:Class="TimeLedger.Desktop.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="White"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="vm:MainViewModel">
+            <views:EventsTimelineView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:ActivityFormViewModel">
+            <views:ActivityFormView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:DeleteActivityViewModel">
+            <views:DeleteActivityView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:EventDetailsViewModel">
+            <views:EventDetailsView />
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <Grid ColumnDefinitions="260, *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <!-- SIDEBAR (unchanged from before) -->
+        <Border Grid.Column="0" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="0,0,1,0" Padding="15">
+            <Grid RowDefinitions="Auto, Auto, *, Auto">
+
+                <StackPanel Grid.Row="0" Spacing="4" Margin="0,10,0,20">
+                    <TextBlock Text="TimeLedger" FontSize="20" FontWeight="Bold" Foreground="#111827"/>
+                    <TextBlock Text="Manage your schedule" FontSize="11" Foreground="#6B7280"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Spacing="10" Margin="0,0,0,25">
+                    <Button Content="+ Add Event" Command="{Binding NavigateToAddActivityCommand}"
+                            Background="#111827" Foreground="White"
+                            Height="36" CornerRadius="6" HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+
+                    <StackPanel Spacing="5" IsVisible="{Binding IsOnlineMode}">
+                        <Button Content="Sync Data" Command="{Binding SyncNowCommand}"
+                                Background="#E5E7EB" Foreground="#111827" Height="34" CornerRadius="6"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBlock Text="{Binding SyncStatusMessage}" FontSize="11" Foreground="#4B5563" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="15">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="VIEWS" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" Margin="5,0,0,5"/>
+                            <Button Content="Day View" Background="Transparent" Foreground="#111827" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5"/>
+                            <Button Content="Week View" Background="Transparent" Foreground="#111827" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="5" IsVisible="{Binding IsOnlineMode}">
+                            <TextBlock Text="COLLABORATION" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" Margin="5,0,0,5"/>
+                            <Button Content="Inbox" Background="Transparent" Foreground="#111827" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5"/>
+                            <Button Content="Groups" Background="Transparent" Foreground="#111827" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5"/>
+                            <Button Content="Create Group" Background="Transparent" Foreground="#111827" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,5"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border Grid.Row="3" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="0,15,0,0">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding UserName}" FontWeight="Bold" FontSize="13" Foreground="#111827"/>
+                            <TextBlock Text="{Binding UserEmail}" FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Log Out" Command="{Binding LogOutCommand}"
+                                Background="Transparent" Foreground="#EF4444" FontSize="12" FontWeight="SemiBold"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- RIGHT PANEL — swaps based on CurrentPage -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    </Grid>
+</UserControl>

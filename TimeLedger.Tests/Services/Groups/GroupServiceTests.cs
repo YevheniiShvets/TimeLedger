@@ -1,11 +1,11 @@
-﻿using NSubstitute;
+﻿using BusinessCollaboration.DTOs.Group;
+using BusinessCollaboration.Interfaces.Group;
+using BusinessCollaboration.Interfaces.User;
+using BusinessCollaboration.Models.Group;
+using BusinessCollaboration.Models.User;
+using BusinessCollaboration.Services.Group;
+using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using TimeLedger.Core.DTOs.Groups;
-using TimeLedger.Core.Interfaces.Groups;
-using TimeLedger.Core.Interfaces.Users;
-using TimeLedger.Core.Models.Groups;
-using TimeLedger.Core.Models.Users;
-using TimeLedger.Core.Services;
 
 namespace TimeLedger.Tests.Services.Groups;
 
@@ -14,7 +14,7 @@ public class GroupServiceTests
 {
     private IGroupRepository _groupRepository = null!;
     private IUserRepository _userRepository = null!;
-    private IGroupService _groupService = null!;
+    private GroupService _groupService = null!;
 
     private const int UserId = 12;
     private const int OtherUserId = 99;

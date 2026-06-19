@@ -1,8 +1,8 @@
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using TimeLedger.Core.DTOs.Events;
+using TimeLedger.Core.DTOs.Event;
 using TimeLedger.Core.Interfaces.Events;
-using TimeLedger.Core.Models.Events;
+using TimeLedger.Core.Models.Event;
 using TimeLedger.Core.Services.Event;
 
 namespace TimeLedger.Tests.Services.Event;
@@ -21,7 +21,7 @@ public class EventServiceTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static Core.Models.Events.Event MakeEntity(
+    private static Core.Models.Event.Event MakeEntity(
         int id = 1,
         EventType type = EventType.OneTime,
         DateTime? start = null,
@@ -184,7 +184,7 @@ public class EventServiceTests
         var dto = MakeCreateDto();
         dto.Title = new string('x', 200);
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), null, OwnerType, OwnerId).Returns(false);
-        _repo.Add(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity());
+        _repo.Add(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity());
 
         Assert.That(() => _service.Create(dto, OwnerType, OwnerId), Throws.Nothing);
     }
@@ -204,7 +204,7 @@ public class EventServiceTests
         var dto = MakeCreateDto();
         dto.Description = null;
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), null, OwnerType, OwnerId).Returns(false);
-        _repo.Add(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity());
+        _repo.Add(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity());
 
         Assert.That(() => _service.Create(dto, OwnerType, OwnerId), Throws.Nothing);
     }
@@ -277,7 +277,7 @@ public class EventServiceTests
     public void Create_DoesNotValidateTimeRange_ForDeadlineEvent()
     {
         var dto = MakeCreateDto(type: EventType.Deadline);
-        _repo.Add(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity(type: EventType.Deadline));
+        _repo.Add(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity(type: EventType.Deadline));
 
         Assert.That(() => _service.Create(dto, OwnerType, OwnerId), Throws.Nothing);
     }
@@ -296,7 +296,7 @@ public class EventServiceTests
         var (_, hasOverlap) = _service.Create(dto, OwnerType, OwnerId);
 
         Assert.That(hasOverlap, Is.True);
-        _repo.DidNotReceive().Add(Arg.Any<Core.Models.Events.Event>());
+        _repo.DidNotReceive().Add(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -306,13 +306,13 @@ public class EventServiceTests
         var saved = MakeEntity();
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), null, OwnerType, OwnerId)
              .Returns(false);
-        _repo.Add(Arg.Any<Core.Models.Events.Event>()).Returns(saved);
+        _repo.Add(Arg.Any<Core.Models.Event.Event>()).Returns(saved);
 
         var (result, hasOverlap) = _service.Create(dto, OwnerType, OwnerId);
 
         Assert.That(hasOverlap, Is.False);
         Assert.That(result, Is.Not.Null);
-        _repo.Received(1).Add(Arg.Any<Core.Models.Events.Event>());
+        _repo.Received(1).Add(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -320,7 +320,7 @@ public class EventServiceTests
     {
         var dto = MakeCreateDto();
         dto.AllowOverlap = true;
-        _repo.Add(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity());
+        _repo.Add(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity());
 
         var (_, hasOverlap) = _service.Create(dto, OwnerType, OwnerId);
 
@@ -328,7 +328,7 @@ public class EventServiceTests
         _repo.DidNotReceive()
              .HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(),
                          Arg.Any<int?>(), Arg.Any<EventOwnerType>(), Arg.Any<int>());
-        _repo.Received(1).Add(Arg.Any<Core.Models.Events.Event>());
+        _repo.Received(1).Add(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -337,7 +337,7 @@ public class EventServiceTests
         var dto = MakeCreateDto();
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), null, OwnerType, OwnerId)
              .Returns(false);
-        _repo.Add(Arg.Do<Core.Models.Events.Event>(e =>
+        _repo.Add(Arg.Do<Core.Models.Event.Event>(e =>
         {
             Assert.That(e.OwnerType, Is.EqualTo(OwnerType));
             Assert.That(e.OwnerId,   Is.EqualTo(OwnerId));
@@ -447,7 +447,7 @@ public class EventServiceTests
         // The overlap guard checks entity.EventType (the stored type), not the DTO type.
         _repo.GetById(1, OwnerType, OwnerId).Returns(MakeEntity(type: EventType.Deadline));
         var dto = MakeUpdateDto(type: EventType.Deadline);
-        _repo.Update(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity(type: EventType.Deadline));
+        _repo.Update(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity(type: EventType.Deadline));
 
         _service.Update(1, dto, OwnerType, OwnerId);
 
@@ -470,7 +470,7 @@ public class EventServiceTests
         var (_, hasOverlap) = _service.Update(1, MakeUpdateDto(), OwnerType, OwnerId);
 
         Assert.That(hasOverlap, Is.True);
-        _repo.DidNotReceive().Update(Arg.Any<Core.Models.Events.Event>());
+        _repo.DidNotReceive().Update(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -480,12 +480,12 @@ public class EventServiceTests
         _repo.GetById(1, OwnerType, OwnerId).Returns(entity);
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), 1, OwnerType, OwnerId)
              .Returns(false);
-        _repo.Update(Arg.Any<Core.Models.Events.Event>()).Returns(entity);
+        _repo.Update(Arg.Any<Core.Models.Event.Event>()).Returns(entity);
 
         var (_, hasOverlap) = _service.Update(1, MakeUpdateDto(), OwnerType, OwnerId);
 
         Assert.That(hasOverlap, Is.False);
-        _repo.Received(1).Update(Arg.Any<Core.Models.Events.Event>());
+        _repo.Received(1).Update(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -493,7 +493,7 @@ public class EventServiceTests
     {
         var entity = MakeEntity();
         _repo.GetById(1, OwnerType, OwnerId).Returns(entity);
-        _repo.Update(Arg.Any<Core.Models.Events.Event>()).Returns(entity);
+        _repo.Update(Arg.Any<Core.Models.Event.Event>()).Returns(entity);
         var dto = MakeUpdateDto();
         dto.AllowOverlap = true;
 
@@ -503,7 +503,7 @@ public class EventServiceTests
         _repo.DidNotReceive()
              .HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(),
                          Arg.Any<int?>(), Arg.Any<EventOwnerType>(), Arg.Any<int>());
-        _repo.Received(1).Update(Arg.Any<Core.Models.Events.Event>());
+        _repo.Received(1).Update(Arg.Any<Core.Models.Event.Event>());
     }
 
     [Test]
@@ -512,7 +512,7 @@ public class EventServiceTests
         _repo.GetById(1, OwnerType, OwnerId).Returns(MakeEntity(id: 1));
         _repo.HasOverlap(Arg.Any<DateTime>(), Arg.Any<DateTime>(), 1, OwnerType, OwnerId)
              .Returns(false);
-        _repo.Update(Arg.Any<Core.Models.Events.Event>()).Returns(MakeEntity(id: 1));
+        _repo.Update(Arg.Any<Core.Models.Event.Event>()).Returns(MakeEntity(id: 1));
 
         _service.Update(1, MakeUpdateDto(), OwnerType, OwnerId);
 
@@ -551,7 +551,7 @@ public class EventServiceTests
 
         try { _service.Delete(99, OwnerType, OwnerId); } catch (KeyNotFoundException) { }
 
-        _repo.DidNotReceive().Delete(Arg.Any<Core.Models.Events.Event>());
+        _repo.DidNotReceive().Delete(Arg.Any<Core.Models.Event.Event>());
     }
 
     // =========================================================================

@@ -1,58 +1,77 @@
-﻿@startuml TimeLedger_ERD
-!define TABLENAME(name) class name << (T, #FFAAAA) >>
+﻿@startuml
 
-TABLENAME(Users) {
-    + id: INT << PK >>
-    - name: NVARCHAR(100)
-    - email: NVARCHAR(254) << UNIQUE >>
-    - passwordHash: NVARCHAR(1000)
-    - createdAt: DATETIME2
+entity "Users" as Users {
+  * id : INT <<PK>>
+  --
+  createdAt : DATETIME2
+  --
+  name : NVARCHAR(100)
+  email : NVARCHAR(254) <<UNIQUE>>
+  passwordHash : NVARCHAR(1000)
 }
 
-TABLENAME(Groups) {
-    + id: INT << PK >>
-    - ownerId: INT << FK >>
-    - name: NVARCHAR(100)
+entity "Groups" as Groups {
+  * id : INT <<PK>>
+  --
+  ownerId : INT <<FK>>
+  --
+  name : NVARCHAR(100)
 }
 
-TABLENAME(Events) {
-    + id: INT << PK >>
-    - Title: NVARCHAR(200)
-    - Description: NVARCHAR(1000)
-    - Location: NVARCHAR(300)
-    - StartTime: DATETIME2
-    - EndTime: DATETIME2
-    - AllowOverlap: BIT
-    - OwnerType: TINYINT
-    - OwnerId: INT
-    - EventType: TINYINT
-    - DueAt: DATETIME2
-    - RecurrenceFrequency: TINYINT
-    - RecurrenceInterval: INT
-    - RecurrenceValue: NVARCHAR(max)
-    - RecurrenceEndTime: DATETIME2
-    - RecurrenceMaxOccurrences: INT
+entity "GroupMembers" as GroupMembers {
+  * groupId : INT <<PK, FK>>
+  * userId : INT <<PK, FK>>
 }
 
-TABLENAME(GroupMembers) {
-    + groupId: INT << PK, FK >>
-    + userId: INT << PK, FK >>
+entity "GroupInvitations" as GroupInvitations {
+  * Id : INT <<PK>>
+  --
+  GroupId : INT <<FK>>
+  InviterByUserID : INT <<FK>>
+  InviterUserId : INT <<FK>>
+  CreatedAt : DATETIME2
+  ExpiresAt : DATETIME2
 }
 
-TABLENAME(GroupInvitations) {
-    + Id: INT << PK >>
-    - GroupId: INT << FK >>
-    - InviterByUserID: INT << FK >>
-    - InviterUserId: INT << FK >>
-    - CreatedAt: DATETIME2
-    - ExpiresAt: DATETIME2
+entity "Events" as Events {
+  * id : INT <<PK>>
+  --
+  StartTime : DATETIME2
+  EndTime : DATETIME2
+  AllowOverlap : BIT
+  OwnerType : TINYINT
+  OwnerId : INT
+  EventType : TINYINT
+  DueAt : DATETIME2
+  RecurrenceFrequency : TINYINT
+  RecurrenceInterval : INT
+  RecurrenceEndTime : DATETIME2
+  RecurrenceMaxOccurrences : INT
+  IsDeleted : BIT
+  UpdatedAt : DATETIME2
+  --
+  Title : NVARCHAR(200)
+  Description : NVARCHAR(1000)
+  Location : NVARCHAR(300)
+  RecurrenceValue : NVARCHAR(max)
 }
-Users ||--o{ Groups: "1:M (owns)"
-Users ||--o{ Events: "1:M logical owner (ownerType=User)"
-Groups ||--o{ Events: "1:M logical owner (ownerType=Group)"
-GroupMembers }o--|| Users
-GroupMembers }o--|| Groups
-GroupInvitations }o--|| Groups
-GroupInvitations }o--|| Users
+
+' Users owns Groups (1 user -> many groups)
+Users ||--o{ Groups : "1:M (owns)"
+
+' Group has many invitations
+Groups ||--o{ GroupInvitations : "1:M"
+
+' Two distinct FK relationships from Users to GroupInvitations
+Users ||--o{ GroupInvitations : "InviterByUserID"
+Users ||--o{ GroupInvitations : "InviterUserId"
+
+' Polymorphic ownership of Events
+Users ||--o{ Events : "1:M logical owner (ownerType=User)"
+Groups ||--o{ Events : "1:M logical owner (ownerType=Group)"
+
+' Group membership, many-to-many via junction table
+Users ||--o{ GroupMembers
+Groups ||-right-o{ GroupMembers
 
 @enduml
